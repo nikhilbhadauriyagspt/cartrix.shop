@@ -63,9 +63,9 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-950 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100  p-4 relative overflow-hidden">
       {/* Background Visuals (Consistent with Login) */}
-      <div className="absolute inset-0 z-0 opacity-20 dark:opacity-10">
+      <div className="absolute inset-0 z-0 opacity-20 ">
         <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
           <path d="M0 0h100v100H0z" fill="url(#pattern-signup)" />
           <defs>
@@ -80,14 +80,14 @@ export default function Signup() {
       <div className="absolute bottom-10 left-0 w-80 h-80 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
       <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-accent-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
 
-      <div className="relative z-10 max-w-4xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl backdrop-blur-md bg-opacity-90 dark:bg-opacity-90 p-8 md:p-10 border border-gray-200 dark:border-gray-700">
+      <div className="relative z-10 max-w-4xl w-full bg-white  rounded-2xl shadow-2xl backdrop-blur-md bg-opacity-90  p-8 md:p-10 border border-gray-200 ">
         <div className="text-center mb-8">
-          <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Create Your Account</h2>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">Join us today and explore premium products</p>
+          <h2 className="text-4xl font-extrabold text-gray-900  mb-2">Create Your Account</h2>
+          <p className="text-gray-600  text-lg">Join us today and explore premium products</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg text-red-700 dark:text-red-300 text-sm">
+          <div className="mb-6 p-4 bg-red-50  border border-red-200  rounded-lg text-red-700  text-sm">
             {error}
           </div>
         )}
@@ -95,7 +95,7 @@ export default function Signup() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex gap-5">
             <div className='w-full'>
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+              <label htmlFor="name" className="block text-sm font-semibold text-gray-800  mb-2">
                 Full Name *
               </label>
               <input
@@ -104,13 +104,13 @@ export default function Signup() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-white  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
                 placeholder="John Doe"
               />
             </div>
 
             <div className='w-full'>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-800  mb-2">
                 Email Address *
               </label>
               <input
@@ -119,14 +119,14 @@ export default function Signup() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-white  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
                 placeholder="you@example.com"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-800  mb-2">
               Password *
             </label>
             <input
@@ -135,13 +135,13 @@ export default function Signup() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-white  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
               placeholder="••••••••"
             />
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-800  mb-2">
               Confirm Password *
             </label>
             <input
@@ -150,7 +150,7 @@ export default function Signup() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-white  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
               placeholder="••••••••"
             />
           </div>
@@ -164,9 +164,9 @@ export default function Signup() {
           </button>
         </form>
 
-        <p className="mt-8 text-center text-gray-700 dark:text-gray-300 text-base">
+        <p className="mt-8 text-center text-gray-700  text-base">
           Already have an account?{' '}
-          <Link to="/login" className="font-bold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+          <Link to="/login" className="font-bold text-primary-600 hover:text-primary-700  ">
             Sign In
           </Link>
         </p>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+
 import {
   Search,
   Filter,
@@ -14,8 +15,20 @@ import {
 import { useCart } from '../contexts/CartContext'
 import { useWebsite } from '../contexts/WebsiteContext'
 
+// Helper function to generate URL-friendly slugs
+const generateSlug = (name) => {
+  if (!name) return '';
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric chars except space and hyphen
+    .trim()
+    .replace(/\s+/g, '-'); // Replace spaces with hyphens
+};
+
 export default function Shop() {
-  const [searchParams] = useSearchParams()
+  const { categorySlug } = useParams()
+  const [searchParams] = useSearchParams() // Re-add useSearchParams
+  const navigate = useNavigate()
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -44,11 +57,10 @@ export default function Shop() {
       if (!websiteId) return
 
       const fetchedCategories = await fetchCategories()
-      const categoryParam = searchParams.get('category')
 
-      if (categoryParam && fetchedCategories.length > 0) {
+      if (categorySlug && fetchedCategories.length > 0) {
         const matchingCategory = fetchedCategories.find(
-          (cat) => cat.name.toLowerCase() === categoryParam.toLowerCase()
+          (cat) => generateSlug(cat.name) === categorySlug
         )
         if (matchingCategory) {
           setSelectedCategory(matchingCategory.id)
@@ -58,11 +70,11 @@ export default function Shop() {
       } else {
         setSelectedCategory('all')
       }
-      setIsInitialCategoryLoadComplete(true) // Mark initial category load as complete
+      setIsInitialCategoryLoadComplete(true)
     }
 
     initCategoriesAndSetFilter()
-  }, [websiteId, searchParams.get('category')])
+  }, [websiteId, categorySlug])
 
   // Effect to fetch products based on filters
   useEffect(() => {
@@ -142,10 +154,44 @@ export default function Shop() {
     }
   }
 
+  const handleCategoryChange = (categoryId, categoryName) => {
+    setSelectedCategory(categoryId);
+    
+    // Preserve existing search params (like 'search')
+    const preservedParams = new URLSearchParams();
+    if (searchParams.get('search')) {
+      preservedParams.set('search', searchParams.get('search'));
+    }
+
+    const queryString = preservedParams.toString();
+    const finalQueryString = queryString ? `?${queryString}` : '';
+
+    let newPath;
+    if (categoryId !== 'all' && categoryName) {
+      newPath = `/shop/category/${generateSlug(categoryName)}${finalQueryString}`;
+    } else {
+      newPath = `/shop${finalQueryString}`;
+    }
+
+    console.log('Navigating to:', newPath); // Diagnostic log
+    navigate(newPath);
+  };
+
   const clearFilters = () => {
-    setSelectedCategory('all')
-    setSelectedPrice('all')
-    setSortBy('featured')
+    setSelectedCategory('all');
+    setSelectedPrice('all');
+    setSortBy('featured');
+
+    // Preserve existing search params (like 'search')
+    const preservedParams = new URLSearchParams();
+    if (searchParams.get('search')) {
+      preservedParams.set('search', searchParams.get('search'));
+    }
+    const queryString = preservedParams.toString();
+    const finalQueryString = queryString ? `?${queryString}` : '';
+    
+    // Navigate to base shop path, but keep the search query
+    navigate(`/shop${finalQueryString}`);
   }
 
   const hasActiveFilters = selectedCategory !== 'all' || selectedPrice !== 'all'
@@ -210,7 +256,7 @@ export default function Shop() {
           name="category"
           value="all"
           checked={selectedCategory === 'all'}
-          onChange={(e) => setSelectedCategory(e.target.value)}
+          onChange={() => handleCategoryChange('all', null)}
           className="peer h-5 w-5 opacity-0 absolute cursor-pointer"
         />
         {/* Outer light circle - always visible */}
@@ -231,7 +277,7 @@ export default function Shop() {
             name="category"
             value={cat.id}
             checked={selectedCategory === cat.id}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={() => handleCategoryChange(cat.id, cat.name)}
             className="peer h-5 w-5 opacity-0 absolute cursor-pointer"
           />
           {/* Outer light circle */}
@@ -473,7 +519,7 @@ export default function Shop() {
                       name="mobile-category"
                       value="all"
                       checked={selectedCategory === 'all'}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      onChange={() => handleCategoryChange('all', null)}
                       className="w-5 h-5 text-primary-600"
                     />
                     <span>All Printers</span>
@@ -485,7 +531,7 @@ export default function Shop() {
                         name="mobile-category"
                         value={cat.id}
                         checked={selectedCategory === cat.id}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        onChange={() => handleCategoryChange(cat.id, cat.name)}
                         className="w-5 h-5 text-primary-600"
                       />
                       <span>{cat.name}</span>

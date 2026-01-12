@@ -31,6 +31,7 @@ export default function AdminUsers() {
       })
 
       if (error) throw error
+      console.log('Fetched users data:', data);
       setUsers(data || [])
     } catch (error) {
       console.error('Error fetching users:', error)

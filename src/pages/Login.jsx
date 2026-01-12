@@ -43,9 +43,9 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-950 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100  p-4 relative overflow-hidden">
       {/* Background Visuals */}
-      <div className="absolute inset-0 z-0 opacity-20 dark:opacity-10">
+      <div className="absolute inset-0 z-0 opacity-20">
         <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
           <path d="M0 0h100v100H0z" fill="url(#pattern-login)" />
           <defs>
@@ -61,21 +61,21 @@ export default function Login() {
       <div className="absolute bottom-10 left-1/4 w-80 h-80 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
 
 
-      <div className="relative z-10 max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl backdrop-blur-md bg-opacity-90 dark:bg-opacity-90 p-8 md:p-10 border border-gray-200 dark:border-gray-700">
+      <div className="relative z-10 max-w-md w-full bg-white  rounded-2xl shadow-2xl backdrop-blur-md bg-opacity-90  p-8 md:p-10 border border-gray-200 ">
         <div className="text-center mb-8">
-          <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Welcome Back!</h2>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">Sign in to your account</p>
+          <h2 className="text-4xl font-extrabold text-gray-900  mb-2">Welcome Back!</h2>
+          <p className="text-gray-600  text-lg">Sign in to your account</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg text-red-700 dark:text-red-300 text-sm">
+          <div className="mb-6 p-4 bg-red-50  border border-red-200  rounded-lg text-red-700  text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-800  mb-2">
               Email Address
             </label>
             <input
@@ -84,13 +84,13 @@ export default function Login() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-white  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-800  mb-2">
               Password
             </label>
             <input
@@ -99,7 +99,7 @@ export default function Login() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-white  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
               placeholder="••••••••"
             />
           </div>
@@ -110,13 +110,13 @@ export default function Login() {
                 id="remember_me"
                 name="remember_me"
                 type="checkbox"
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded "
               />
-              <label htmlFor="remember_me" className="ml-2 block text-gray-700 dark:text-gray-300">
+              <label htmlFor="remember_me" className="ml-2 block text-gray-700 ">
                 Remember me
               </label>
             </div>
-            <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+            <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-700 ">
               Forgot password?
             </Link>
           </div>
@@ -130,9 +130,9 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="mt-8 text-center text-gray-700 dark:text-gray-300 text-base">
+        <p className="mt-8 text-center text-gray-700  text-base">
           Don't have an account?{' '}
-          <Link to="/signup" className="font-bold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+          <Link to="/signup" className="font-bold text-primary-600 hover:text-primary-700 ">
             Sign Up
           </Link>
         </p>

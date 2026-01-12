@@ -65,13 +65,13 @@ export default function AllCategories() {
     }
 
     return (
-        <div className="bg-white dark:bg-gray-950 min-h-screen">
-            <section className="py-12 md:py-16 bg-gray-100 dark:bg-gray-900">
+        <div className="bg-white  min-h-screen">
+            <section className="py-12 md:py-16 bg-gray-100 ">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900  mb-4">
                         Explore All Product Categories
                     </h1>
-                    <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-600  max-w-2xl mx-auto">
                         Dive into our extensive range of products, organized to help you find exactly what you need.
                     </p>
                 </div>
@@ -93,25 +93,25 @@ export default function AllCategories() {
                                     key={category.id}
                                     to={`/shop?category=${encodeURIComponent(category.name)}`}
                                     className="
-                                        group rounded-xl border border-gray-200 dark:border-gray-800
-                                        bg-white dark:bg-gray-900 p-5 text-center
+                                        group rounded-xl border border-gray-200 
+                                        bg-white  p-5 text-center
                                         transition-all duration-200
                                         hover:shadow-lg hover:-translate-y-1
                                     "
                                 >
-                                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg border bg-gray-50 dark:bg-gray-800">
-                                        <Icon size={26} className="text-gray-700 dark:text-gray-300" />
+                                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg border bg-gray-50 ">
+                                        <Icon size={26} className="text-gray-700 " />
                                     </div>
 
-                                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                                    <h3 className="text-sm font-semibold text-gray-900 ">
                                         {category.name}
                                     </h3>
 
-                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                                    <p className="mt-1 text-xs text-gray-500  line-clamp-2">
                                         {category.description || 'Explore products'}
                                     </p>
 
-                                    <span className="mt-3 inline-block rounded-full bg-gray-100 dark:bg-gray-800 px-4 py-1 text-xs text-gray-600 dark:text-gray-400">
+                                    <span className="mt-3 inline-block rounded-full bg-gray-100  px-4 py-1 text-xs text-gray-600 ">
                                         {category.count} products
                                     </span>
                                 </Link>

@@ -8,6 +8,7 @@ import {
 import SearchBar from '../components/SearchBar'
 import { useCart } from '../contexts/CartContext'
 import CategorySection from '../components/CategorySection'
+import TestimonialSection from '../components/TestimonialSection'
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([])
@@ -75,9 +76,9 @@ export default function Home() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 py-16 md:py-0">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-50 py-16 md:py-0">
         {/* Background decorative elements */}
-        <div className="absolute inset-0 z-0 opacity-30 dark:opacity-15 pointer-events-none">
+        <div className="absolute inset-0 z-0 opacity-30  pointer-events-none">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary-400 rounded-full blur-3xl animate-blob-slow"></div>
           <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary-500 rounded-full blur-3xl animate-blob-slow animation-delay-4000"></div>
         </div>
@@ -86,24 +87,25 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* LEFT - Content */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100/70 dark:bg-primary-900/40 backdrop-blur-sm mb-6 mx-auto lg:mx-0">
-                <Sparkles size={18} className="text-primary-600 dark:text-primary-400" />
-                <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100/70  backdrop-blur-sm mb-6 mx-auto lg:mx-0">
+                <Sparkles size={18} className="text-primary-600 
+                " />
+                <span className="text-sm font-medium text-primary-700 ">
                   Next-Gen Printing Technology 2026
                 </span>
               </div>
 
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight mb-8">
-                <span className="text-gray-900 dark:text-white">Print Smarter.</span>
+                <span className="text-gray-900 ">Print Smarter.</span>
                 <br />
                 <span className="bg-gradient-to-r from-primary-600 via-primary-600 to-primary-600 bg-clip-text text-transparent">
                   Print Better.
                 </span>
               </h1>
 
-              <p className="text-xl sm:text-2xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto lg:mx-0  leading-relaxed">
+              <p className="text-xl sm:text-2xl text-gray-700  max-w-3xl mx-auto lg:mx-0  leading-relaxed">
                 Professional-grade printers. Lightning-fast speeds.
-                <span className="font-semibold text-primary-600 dark:text-primary-400"> Zero compromises.</span>
+                <span className="font-semibold text-primary-600 "> Zero compromises.</span>
               </p>
               <div className="my-5 max-w-3xl mx-auto">
                 <SearchBar placeholder="Search for products..." />
@@ -125,7 +127,7 @@ export default function Home() {
                   href="/compare"
                   className="
                   px-10 py-3 rounded-full font-bold text-md
-                  border-2 border-primary-500/70 text-primary-700 dark:text-primary-300
+                  border-2 border-primary-500/70 text-primary-700 
                 "
                 >
                   Compare Models →
@@ -138,36 +140,36 @@ export default function Home() {
     flex flex-wrap justify-center lg:justify-start gap-6 sm:gap-10 
     px-7 py-5 rounded-2xl 
     bg-gradient-to-r from-green-50/70 to-emerald-50/70 
-    dark:from-green-950/40 dark:to-emerald-950/40
+    
     backdrop-blur-md 
-    border border-green-200/60 dark:border-green-800/40
-    shadow-md shadow-green-200/30 dark:shadow-green-900/20
+    border border-green-200/60 
+    shadow-md shadow-green-200/30 
   ">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-green-500/20 flex items-center justify-center text-green-600 dark:text-green-400">
+                    <div className="w-9 h-9 rounded-xl bg-green-500/20 flex items-center justify-center text-green-600 ">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                       </svg>
                     </div>
-                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">2 Year Warranty</span>
+                    <span className="text-sm font-medium text-gray-800 ">2 Year Warranty</span>
                   </div>
 
                   <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-green-500/20 flex items-center justify-center text-green-600 dark:text-green-400">
+                    <div className="w-9 h-9 rounded-xl bg-green-500/20 flex items-center justify-center text-green-600 ">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                       </svg>
                     </div>
-                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Free Shipping ₹999+</span>
+                    <span className="text-sm font-medium text-gray-800 ">Free Shipping ₹999+</span>
                   </div>
 
                   <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-green-500/20 flex items-center justify-center text-green-600 dark:text-green-400">
+                    <div className="w-9 h-9 rounded-xl bg-green-500/20 flex items-center justify-center text-green-600 ">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                       </svg>
                     </div>
-                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">24×7 Expert Support</span>
+                    <span className="text-sm font-medium text-gray-800 ">24×7 Expert Support</span>
                   </div>
                 </div>
               </div>
@@ -481,6 +483,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <TestimonialSection />
+
 
       {/* Call to Action Section */}
       <section className="py-20 bg-primary-600 text-white">

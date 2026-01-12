@@ -116,6 +116,7 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/shop" element={<Shop />} />
+                      <Route path="/shop/category/:categorySlug" element={<Shop />} />
                       <Route path="/categories" element={<AllCategories />} />
                       <Route path="/shop/:id" element={<ProductDetail />} />
                       <Route path="/faq" element={<FAQ />} />

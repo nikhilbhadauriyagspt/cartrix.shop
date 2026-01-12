@@ -64,7 +64,9 @@ export const AuthProvider = ({ children }) => {
             website_id: websiteId
           }])
       } catch (regError) {
+        // Re-throw the error so it can be caught by the UI
         console.error('Error tracking user registration:', regError)
+        throw new Error(`User created, but failed to associate with website. DB Error: ${regError.message}`);
       }
     }
 

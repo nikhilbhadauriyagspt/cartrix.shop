@@ -21,6 +21,12 @@ export function SiteSettingsProvider({ children }) {
     }
   }, [websiteId])
 
+  useEffect(() => {
+    if (settings && settings.brand_name) {
+      document.title = `${settings.brand_name} | Premium Printers, Ink & Office Printing Solutions`;
+    }
+  }, [settings]);
+
   const fetchSettings = async () => {
     try {
       const timeoutPromise = new Promise((_, reject) =>

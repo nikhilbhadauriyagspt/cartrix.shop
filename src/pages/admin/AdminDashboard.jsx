@@ -46,8 +46,7 @@ export default function AdminDashboard() {
         supabase.from('products').select('*', { count: 'exact', head: true }),
         supabase.from('blogs').select('*', { count: 'exact', head: true }),
         supabase.from('orders').select('total_amount').eq('website_id', websiteId),
-        supabase.rpc('get_user_count'),
-        supabase.rpc('admin_get_contact_submissions'),
+        supabase.rpc('admin_get_contact_submissions', { target_website_id: websiteId }),
         supabase
           .from('orders')
           .select('id, total_amount, status, created_at')
@@ -63,7 +62,7 @@ export default function AdminDashboard() {
         blogs: blogsRes.count || 0,
         orders: ordersRes.data?.length || 0,
         revenue: revenue,
-        users: usersRes.data || 0,
+        users: usersRes.data?.length || 0,
         inquiries: inquiriesRes.data?.length || 0,
       })
 
