@@ -1,0 +1,276 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900 min-h-screen;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-primary-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply bg-accent-600 text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-accent-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+
+  .input-field {
+    @apply w-full px-5 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white;
+  }
+}
+
+@keyframes blob-slow {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(120px, 80px) scale(1.15); }
+  66%  { transform: translate(-80px, 140px) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+.animate-blob-slow {
+  animation: blob-slow 20s infinite ease-in-out;
+}
+.animation-delay-4000 {
+  animation-delay: 5s;
+}
+
+.quill {
+  background: white;
+}
+
+.ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 12px;
+}
+
+.ql-container.ql-snow {
+  border: none;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.ql-editor {
+  min-height: 400px;
+  padding: 20px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: normal;
+}
+
+.ql-editor h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+}
+
+.ql-editor h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+.ql-editor h3 {
+  font-size: 1.17em;
+  font-weight: bold;
+  margin-top: 0.83em;
+  margin-bottom: 0.83em;
+}
+
+.ql-editor p {
+  margin-bottom: 1em;
+}
+
+.ql-editor ul,
+.ql-editor ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.ql-editor blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 16px;
+  margin: 1em 0;
+  color: #6b7280;
+}
+
+.ql-editor pre {
+  background: #f3f4f6;
+  padding: 12px;
+  border-radius: 6px;
+  margin: 1em 0;
+  overflow-x: auto;
+}
+
+.ql-editor code {
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.ql-editor a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+}
+
+/* Ensure HTML content in policies renders with proper styling */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  font-weight: bold;
+  line-height: 1.3;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.prose h1 { font-size: 2em; }
+.prose h2 { font-size: 1.5em; }
+.prose h3 { font-size: 1.25em; }
+.prose h4 { font-size: 1.1em; }
+
+.prose p {
+  margin-bottom: 1em;
+  line-height: 1.7;
+}
+
+.prose ul,
+.prose ol {
+  margin: 1em 0;
+  padding-left: 2em;
+  line-height: 1.7;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose em {
+  font-style: italic;
+}
+
+.prose a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.prose a:hover {
+  color: #1d4ed8;
+}
+
+.prose blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1em;
+  margin: 1em 0;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.prose code {
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.prose pre {
+  background: #f3f4f6;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5em 1em;
+  text-align: left;
+}
+
+.prose th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 2em 0;
+}
+
+.prose address {
+  font-style: normal;
+  line-height: 1.7;
+  margin: 1em 0;
+}
+
+.prose section {
+  margin: 1.5em 0;
+}
+
+.prose .bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+.prose .border {
+  border-width: 1px;
+}
+
+.prose .border-gray-200 {
+  border-color: #e5e7eb;
+}
+
+.prose .rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.prose .p-6 {
+  padding: 1.5rem;
+}
+
+.prose .mb-8 {
+  margin-bottom: 2rem;
+}
+
+.prose .text-sm {
+  font-size: 0.875rem;
+}
+
+.prose .text-gray-500 {
+  color: #6b7280;
+}
