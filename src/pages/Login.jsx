@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -12,19 +13,6 @@ export default function Login() {
 
   useEffect(() => {
     document.title = 'Login - Access Your Account'
-
-    const setMetaTag = (name, content) => {
-      let element = document.querySelector(`meta[name="${name}"]`)
-      if (!element) {
-        element = document.createElement('meta')
-        element.setAttribute('name', name)
-        document.head.appendChild(element)
-      }
-      element.setAttribute('content', content)
-    }
-
-    setMetaTag('description', 'Login to your account to access your orders, wishlist, and personalized shopping experience.')
-    setMetaTag('keywords', 'login, sign in, account access, user login, member login, customer login')
   }, [])
 
   const handleSubmit = async (e) => {
@@ -43,122 +31,110 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100  p-4 relative overflow-hidden">
-      {/* Background Visuals */}
-      <div className="absolute inset-0 z-0 opacity-20">
-        <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
-          <path d="M0 0h100v100H0z" fill="url(#pattern-login)" />
-          <defs>
-            <pattern id="pattern-login" width="10" height="10" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="1" fill="currentColor" stroke="none" strokeWidth="0" opacity="0.1" />
-            </pattern>
-          </defs>
-        </svg>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-[#F2F7F6] p-6 relative overflow-hidden font-sans">
+      {/* Soft Background Decor */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-orange/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
 
-      <div className="absolute top-0 left-0 w-80 h-80 bg-primary-400 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-      <div className="absolute top-0 right-0 w-80 h-80 bg-accent-400 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-10 left-1/4 w-80 h-80 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
-
-
-      <div className="relative z-10 max-w-md w-full bg-white  rounded-2xl shadow-2xl backdrop-blur-md bg-opacity-90  p-8 md:p-10 border border-gray-200 ">
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-extrabold text-gray-900  mb-2">Welcome Back!</h2>
-          <p className="text-gray-600  text-lg">Sign in to your account</p>
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-50  border border-red-200  rounded-lg text-red-700  text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-800  mb-2">
-              Email Address
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-white  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
-              placeholder="you@example.com"
-            />
+      <div className="relative z-10 w-full max-w-[480px]">
+        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-gray-100">
+          
+          {/* Header */}
+          <div className="text-center mb-10">
+            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Lock className="w-8 h-8 text-brand-orange" strokeWidth={1.5} />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3 tracking-tight">Welcome Back</h2>
+            <p className="text-gray-500 font-medium italic">Enter your details to access your account</p>
           </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-gray-800  mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-white  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
-              placeholder="••••••••"
-            />
-          </div>
+          {error && (
+            <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-sm font-medium flex items-center gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+              {error}
+            </div>
+          )}
 
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-14 pr-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 outline-none transition-all font-medium"
+                  placeholder="name@company.com"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Password</label>
+                <Link to="/forgot-password" size="sm" className="text-xs font-bold text-brand-orange hover:text-orange-700 transition-colors">
+                  Forgot?
+                </Link>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-14 pr-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 outline-none transition-all font-medium"
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 ml-1">
               <input
                 id="remember_me"
-                name="remember_me"
                 type="checkbox"
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded "
+                className="w-5 h-5 border-2 border-gray-200 rounded text-brand-orange focus:ring-brand-orange cursor-pointer"
               />
-              <label htmlFor="remember_me" className="ml-2 block text-gray-700 ">
-                Remember me
+              <label htmlFor="remember_me" className="text-sm font-bold text-gray-500 cursor-pointer">
+                Keep me signed in
               </label>
             </div>
-            <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-700 ">
-              Forgot password?
-            </Link>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-5 bg-black text-white font-bold rounded-2xl hover:bg-brand-orange transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed mt-8"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Authenticating...</span>
+                </div>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-10 pt-8 border-t border-gray-50 text-center">
+            <p className="text-gray-500 font-medium">
+              Don't have an account?{' '}
+              <Link to="/signup" className="text-brand-orange font-bold hover:underline">
+                Create One
+              </Link>
+            </p>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 rounded-lg bg-primary-600 text-white text-lg font-semibold hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-          >
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-        </form>
-
-        <p className="mt-8 text-center text-gray-700  text-base">
-          Don't have an account?{' '}
-          <Link to="/signup" className="font-bold text-primary-600 hover:text-primary-700 ">
-            Sign Up
-          </Link>
-        </p>
+          
+          <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold text-gray-300 uppercase tracking-[0.2em]">
+            <ShieldCheck className="w-4 h-4" /> Secure Auth Environment
+          </div>
+        </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
-      `}</style>
     </div>
   )
 }

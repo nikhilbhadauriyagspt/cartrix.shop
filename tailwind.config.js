@@ -33,6 +33,7 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
+        'brand-orange': '#ff6333',
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',

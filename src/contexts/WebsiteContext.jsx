@@ -24,7 +24,7 @@ export function WebsiteProvider({ children }) {
       setWebsites(websitesData || []);
 
       // Hardcoding to website ID 3
-      const websiteIdToSet = '8a11596e-2ede-47ea-af43-b40688eacff0';
+      const websiteIdToSet = 'c9613c5e-36d2-49ef-8b44-e5bdd6974b7f';
       let selectedWebsite = websitesData?.find(w => w.id === websiteIdToSet);
 
       // Fallback to the first website if website with ID 3 is not found

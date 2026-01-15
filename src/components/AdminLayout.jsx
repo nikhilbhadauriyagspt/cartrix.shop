@@ -1,6 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAdminAuth } from '../contexts/AdminAuthContext'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
+import { useWebsite } from '../contexts/WebsiteContext'
+import { useToast } from '../contexts/ToastContext'
+import { supabase } from '../lib/supabase'
 import WebsiteSelector from './WebsiteSelector'
 import {
   LayoutDashboard,
@@ -9,21 +12,65 @@ import {
   HelpCircle,
   FileText,
   ShoppingBag,
+  ShoppingCart,
   Users,
   MessageSquare,
   CreditCard,
   Palette,
   LogOut,
   Menu,
-  X
+  X,
+  Bell
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function AdminLayout({ children }) {
   const { admin, logout } = useAdminAuth()
   const { settings } = useSiteSettings()
+  const { websiteId } = useWebsite()
+  const { addToast } = useToast()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false)
+
+  useEffect(() => {
+    if (!websiteId) return
+
+    const channel = supabase
+      .channel('admin-orders')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'orders',
+          filter: `website_id=eq.${websiteId}`
+        },
+        (payload) => {
+          const newOrder = payload.new
+          setNotifications(prev => [
+            { id: newOrder.id, amount: newOrder.total_amount, time: new Date() },
+            ...prev
+          ])
+          
+          addToast(`NEW ORDER RECEIVED!\nOrder ID: #${newOrder.id.slice(0, 8)}\nAmount: $${newOrder.total_amount}`, 'success', {
+            duration: 0, // Sticky
+            position: 'center'
+          })
+          
+          try {
+            const audio = new Audio('/notification.mp3')
+            audio.play()
+          } catch (e) {}
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [websiteId])
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/')
 
@@ -40,7 +87,7 @@ export default function AdminLayout({ children }) {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -55,6 +102,59 @@ export default function AdminLayout({ children }) {
             </div>
             <div className="flex items-center gap-4">
               <WebsiteSelector />
+              
+              <div className="relative">
+                <button 
+                  onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+                  className="p-2 rounded-lg hover:bg-slate-700 transition-colors relative group"
+                >
+                  <Bell className="w-6 h-6" />
+                  {notifications.length > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
+                      {notifications.length}
+                    </span>
+                  )}
+                </button>
+
+                {showNotificationDropdown && (
+                  <div className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[60] overflow-hidden animate-in fade-in slide-in-from-top-4">
+                    <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                      <h4 className="font-bold text-slate-900">Notifications</h4>
+                      <button onClick={() => setNotifications([])} className="text-xs font-bold text-red-500 uppercase hover:underline">Clear All</button>
+                    </div>
+                    <div className="max-h-96 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="px-6 py-10 text-center">
+                          <Bell className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+                          <p className="text-slate-400 text-sm font-medium">No new notifications</p>
+                        </div>
+                      ) : (
+                        notifications.map((notif) => (
+                          <Link
+                            key={notif.id}
+                            to="/admin/orders"
+                            onClick={() => setShowNotificationDropdown(false)}
+                            className="block px-6 py-4 hover:bg-slate-50 border-b border-slate-50 transition-colors"
+                          >
+                            <div className="flex gap-4">
+                              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
+                                <ShoppingCart className="w-5 h-5 text-green-600" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold text-slate-900">New Order Received</p>
+                                <p className="text-xs text-slate-500 mt-0.5">Amount: <span className="font-bold text-slate-900">${notif.amount}</span></p>
+                                <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-wider">Just now</p>
+                              </div>
+                            </div>
+                          </Link>
+                        ))
+                      )}
+                    </div>
+                    <Link to="/admin/orders" onClick={() => setShowNotificationDropdown(false)} className="block py-3 text-center text-xs font-bold text-slate-500 bg-slate-50 hover:bg-slate-100 transition-colors uppercase tracking-widest">View All Orders</Link>
+                  </div>
+                )}
+              </div>
+
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 rounded-lg">
                 <div className="w-8 h-8 bg-gradient-to-br from-sky-500 to-cyan-600 rounded-full flex items-center justify-center text-sm font-bold">
                   {admin?.name?.charAt(0) || 'A'}

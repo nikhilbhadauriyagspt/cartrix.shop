@@ -1,145 +1,148 @@
 import { Link } from 'react-router-dom'
-import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react'
+import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, ArrowUp, Send, Printer } from 'lucide-react'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 
 export default function Footer() {
   const { settings } = useSiteSettings()
-
   const currentYear = new Date().getFullYear()
 
-  const footerNavLinks = [
-    { to: '/about', label: 'About Us' },
-    { to: '/shop', label: 'Shop' },
-    { to: '/faq', label: 'FAQ' },
-    { to: '/contact', label: 'Contact' },
+  const shopLinks = [
+    { to: '/shop', label: 'All Products' },
+    { to: '/shop/category/home-printers', label: 'Home Printers' },
+    { to: '/shop/category/office-printers', label: 'Office Printers' },
+    { to: '/shop/category/inkjet-printers', label: 'Inkjet Printers' },
+    { to: '/shop/category/laser-printers', label: 'Laser Printers' },
   ]
 
-  const policyLinks = [
+  const companyLinks = [
+    { to: '/about', label: 'Our Story' },
+    { to: '/faq', label: 'Help Center' },
+    { to: '/contact', label: 'Contact Us' },
+    { to: '/categories', label: 'Departments' },
+  ]
+
+  const legalLinks = [
     { to: '/policy/privacy-policy', label: 'Privacy Policy' },
     { to: '/policy/terms-conditions', label: 'Terms & Conditions' },
-    { to: '/policy/refund-policy', label: 'Refund Policy' },
-    { to: '/policy/shipping-cancellation', label: 'Shipping & Cancellation' },
-
+    { to: '/policy/refund-policy', label: 'Returns & Refund' },
+    { to: '/policy/shipping-cancellation', label: 'Shipping Info' },
   ]
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
-    <footer className="bg-white  text-gray-700  py-10 md:py-12 border-t border-gray-200 ">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 pb-8">
-          {/* Brand Info & Newsletter */}
-          <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center mb-5">
+    <footer className="bg-black text-white pt-24 pb-12 font-sans overflow-hidden relative">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
+
+      <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 pb-20 border-b border-white/10">
+
+          {/* Brand Column */}
+          <div className="lg:col-span-4 space-y-8">
+            <Link to="/" className="inline-block group">
               {settings.brand_logo ? (
-                <img src={settings.brand_logo} alt={settings.brand_name || 'Brand Logo'} className="h-16 w-auto" />
+                <img src={settings.brand_logo} alt="Logo" className="h-12 w-auto brightness-0 invert" />
               ) : (
-                <span className="text-2xl font-bold text-gray-900 ">
-                  {settings.brand_name || 'PriTory'}
-                </span>
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 bg-white text-black flex items-center justify-center font-black text-xl rounded-sm group-hover:bg-brand-orange transition-colors">P</div>
+                  <span className="text-2xl font-black tracking-tighter uppercase">{settings.brand_name || 'PRINTER'}<span className="text-brand-orange">.</span></span>
+                </div>
               )}
             </Link>
-            <p className="text-sm text-gray-600  leading-relaxed mb-6">
-              Discover innovative, reliable products designed to simplify everyday life and business needs. We deliver quality, great service, and a seamless shopping experience you can trust.   </p>
-            <h3 className="text-md font-semibold text-gray-800  mb-3">Join Our Newsletter</h3>
-            <form className="flex">
+
+            <p className="text-gray-400 text-lg leading-relaxed max-w-sm font-medium">
+              Empowering businesses with high-performance printing solutions and premium supplies since 2008. Our commitment to excellence ensures that every document you print reflects professional quality and precision.
+            </p>
+          </div>
+
+          {/* Links Columns */}
+          <div className="lg:col-span-2 space-y-8">
+            <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500">Shop</h4>
+            <ul className="space-y-4">
+              {shopLinks.map((link) => (
+                <li key={link.label}>
+                  <Link to={link.to} className="text-gray-300 hover:text-brand-orange transition-colors font-medium">{link.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="lg:col-span-2 space-y-8">
+            <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500">Company</h4>
+            <ul className="space-y-4">
+              {companyLinks.map((link) => (
+                <li key={link.label}>
+                  <Link to={link.to} className="text-gray-300 hover:text-brand-orange transition-colors font-medium">{link.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Newsletter Column */}
+          <div className="lg:col-span-4 space-y-8">
+            <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500">Newsletter</h4>
+            <p className="text-gray-400 font-medium">Get exclusive offers and printing tips delivered to your inbox.</p>
+
+            <form className="relative group" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="flex-grow px-4 py-2 rounded-l-md bg-gray-100  text-gray-800  text-sm border border-gray-300  focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="Your email address"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-brand-orange transition-all font-medium pr-16"
               />
-              <button
-                type="submit"
-                className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-r-md text-sm font-medium transition-colors duration-200"
-              >
-                Subscribe
+              <button className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white text-black rounded-xl flex items-center justify-center hover:bg-brand-orange hover:text-white transition-all">
+                <Send className="w-5 h-5" />
               </button>
             </form>
-          </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-md font-semibold text-gray-800  mb-4">Quick Links</h3>
-            <ul className="space-y-3">
-              {footerNavLinks.map((link) => (
-                <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className="text-gray-600  hover:text-primary-600  transition-colors duration-200 text-sm"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  to="/categories"
-                  className="text-gray-600  hover:text-primary-600  transition-colors duration-200 text-sm"
-                >
-                  All Categories
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Policies */}
-          <div>
-            <h3 className="text-md font-semibold text-gray-800  mb-4">Legal</h3>
-            <ul className="space-y-3">
-              {policyLinks.map((link) => (
-                <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className="text-gray-600  hover:text-primary-600  transition-colors duration-200 text-sm"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact Info & Social */}
-          <div>
-            <h3 className="text-md font-semibold text-gray-800  mb-4">Contact</h3>
-            <ul className="space-y-3 mb-6">
-              {settings.address && (
-                <li className="flex items-start gap-3">
-                  <MapPin className="w-4 h-4 text-gray-500  flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-gray-600  leading-relaxed">{settings.address}</p>
-                </li>
+            <div className="pt-4 space-y-4">
+              {settings.contact_phone && (
+                <a href={`tel:${settings.contact_phone}`} className="flex items-center gap-3 text-gray-300 hover:text-brand-orange transition-colors group">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-brand-orange/20 transition-colors">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <span className="font-bold">{settings.contact_phone}</span>
+                </a>
               )}
               {settings.contact_email && (
-                <li className="flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-gray-500  flex-shrink-0" />
-                  <a
-                    href={`mailto:${settings.contact_email}`}
-                    className="text-sm text-gray-600  hover:text-primary-600  transition-colors duration-200"
-                  >
-                    {settings.contact_email}
-                  </a>
-                </li>
+                <a href={`mailto:${settings.contact_email}`} className="flex items-center gap-3 text-gray-300 hover:text-brand-orange transition-colors group">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-brand-orange/20 transition-colors">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <span className="font-bold">{settings.contact_email}</span>
+                </a>
               )}
-              {settings.contact_phone && (
-                <li className="flex items-center gap-3">
-                  <Phone className="w-4 h-4 text-gray-500  flex-shrink-0" />
-                  <a
-                    href={`tel:${settings.contact_phone}`}
-                    className="text-sm text-gray-600  hover:text-primary-600  transition-colors duration-200"
-                  >
-                    {settings.contact_phone}
-                  </a>
-                </li>
-              )}
-            </ul>
+            </div>
+          </div>
 
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="py-12 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+            {legalLinks.map((link) => (
+              <Link key={link.label} to={link.to} className="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">{link.label}</Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-8">
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-widest">
+              &copy; {currentYear} {settings.brand_name || 'Printer Pro'}. ALL RIGHTS RESERVED.
+            </p>
+            <button
+              onClick={scrollToTop}
+              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all"
+              title="Back to Top"
+            >
+              <ArrowUp className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-200  pt-6 text-center">
-          <p className="text-sm text-gray-500">
-            &copy; {currentYear} {settings.brand_name || 'PriTory'}. All rights reserved.
-          </p>
-        </div>
       </div>
     </footer>
   )

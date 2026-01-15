@@ -2,8 +2,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { AdminAuthProvider } from './contexts/AdminAuthContext'
 import { CartProvider } from './contexts/CartContext'
+import { WishlistProvider } from './contexts/WishlistContext'
 import { SiteSettingsProvider } from './contexts/SiteSettingsContext'
 import { WebsiteProvider } from './contexts/WebsiteContext'
+import { ToastProvider } from './contexts/ToastContext'
 import AdminProtectedRoute from './components/AdminProtectedRoute'
 import AnnouncementBar from './components/AnnouncementBar'
 import Header from './components/Header'
@@ -23,6 +25,7 @@ import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Profile from './pages/Profile'
+import Wishlist from './pages/Wishlist'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminProducts from './pages/admin/AdminProducts'
@@ -41,10 +44,12 @@ function App() {
     <Router>
       <ScrollToTop />
       <WebsiteProvider>
-        <SiteSettingsProvider>
+        <ToastProvider>
+          <SiteSettingsProvider>
           <AuthProvider>
             <AdminAuthProvider>
               <CartProvider>
+                <WishlistProvider>
               <Routes>
               <Route path="/admin/login" element={<AdminLogin />} />
 
@@ -110,7 +115,6 @@ function App() {
 
               <Route path="*" element={
                 <div className="flex flex-col min-h-screen">
-                  <AnnouncementBar />
                   <Header />
                   <main className="flex-1">
                     <Routes>
@@ -125,6 +129,7 @@ function App() {
                       <Route path="/cart" element={<Cart />} />
                       <Route path="/checkout" element={<Checkout />} />
                       <Route path="/orders" element={<Orders />} />
+                      <Route path="/wishlist" element={<Wishlist />} />
                       <Route path="/order-success" element={<OrderSuccess />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/login" element={<Login />} />
@@ -136,12 +141,13 @@ function App() {
                 </div>
               } />
               </Routes>
+                </WishlistProvider>
               </CartProvider>
             </AdminAuthProvider>
           </AuthProvider>
-        </SiteSettingsProvider>
-      </WebsiteProvider>
-    </Router>
+                  </SiteSettingsProvider>
+                </ToastProvider>
+              </WebsiteProvider>    </Router>
   )
 }
 

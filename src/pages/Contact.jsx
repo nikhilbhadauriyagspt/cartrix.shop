@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Mail, Phone, MapPin, Send, Clock, Check } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, Check, Clock, MessageSquare } from 'lucide-react'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 import { useWebsite } from '../contexts/WebsiteContext'
 
@@ -55,177 +55,232 @@ export default function Contact() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50  text-gray-900 ">
-      {/* Hero Section - Minimalist & Engaging */}
-      <section className="relative py-20 md:py-24 bg-gradient-to-br from-primary-50 to-primary-100  overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20 ">
-          <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
-            <path d="M0 0h100v100H0z" fill="url(#grid)" />
-            <defs>
-              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M10 0L0 0 0 10" fill="none" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-              </pattern>
-            </defs>
-          </svg>
-        </div>
-        <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center z-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900  mb-4">
-            Let's Connect
+    <div className="bg-white font-sans text-gray-900 overflow-x-hidden">
+      
+      {/* 1. Hero Section */}
+      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 bg-[#F2F7F6]">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 text-center relative z-10">
+          <span className="text-brand-orange font-bold text-xs uppercase tracking-[0.2em] mb-4 block animate-fade-in">
+            Contact Us
+          </span>
+          <h1 className="text-5xl md:text-7xl font-black text-gray-900 mb-6 tracking-tight">
+            Let's Start a <span className="text-brand-orange">Conversation</span>
           </h1>
-          <p className="text-lg md:text-xl text-gray-700  max-w-2xl mx-auto">
-            We're here to help with any questions, feedback, or support you need.
+          <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed font-medium">
+            Have a question about our products or need technical support? We're here to help you every step of the way.
           </p>
+        </div>
+        
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/40 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
+      </section>
+
+      {/* 2. Main Content Split */}
+      <section className="py-24">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="grid lg:grid-cols-12 gap-16">
+            
+            {/* Left Column: Contact Info */}
+            <div className="lg:col-span-5 space-y-8">
+              <div className="bg-[#0e4b5b] rounded-[2.5rem] p-10 text-white shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                
+                <h3 className="text-3xl font-black mb-8 relative z-10">Get in Touch</h3>
+                
+                <div className="space-y-8 relative z-10">
+                  {settings.contact_email && (
+                    <div className="flex items-start gap-5 group">
+                      <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-orange transition-colors duration-300">
+                        <Mail className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-teal-200 text-sm font-bold uppercase tracking-wider mb-1">Email Us</p>
+                        <a href={`mailto:${settings.contact_email}`} className="text-xl font-bold hover:text-teal-200 transition-colors">
+                          {settings.contact_email}
+                        </a>
+                        <p className="text-sm text-teal-100/60 mt-1">We usually reply within 24hrs</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {settings.contact_phone && (
+                    <div className="flex items-start gap-5 group">
+                      <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-orange transition-colors duration-300">
+                        <Phone className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-teal-200 text-sm font-bold uppercase tracking-wider mb-1">Call Us</p>
+                        <a href={`tel:${settings.contact_phone}`} className="text-xl font-bold hover:text-teal-200 transition-colors">
+                          {settings.contact_phone}
+                        </a>
+                        <p className="text-sm text-teal-100/60 mt-1">Mon-Fri, 9am - 6pm EST</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {settings.address && (
+                    <div className="flex items-start gap-5 group">
+                      <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-orange transition-colors duration-300">
+                        <MapPin className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-teal-200 text-sm font-bold uppercase tracking-wider mb-1">Visit HQ</p>
+                        <p className="text-lg font-medium leading-relaxed">
+                          {settings.address}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Quick Support Card */}
+              <div className="bg-[#F9FAFB] rounded-[2.5rem] p-10 border border-gray-100">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-xl font-bold text-gray-900">Need faster help?</h4>
+                </div>
+                <p className="text-gray-500 mb-6">Check our extensive Knowledge Base for instant answers to common questions.</p>
+                <a href="/faq" className="text-brand-orange font-bold text-sm uppercase tracking-wider border-b-2 border-brand-orange pb-1 hover:text-orange-700 hover:border-orange-700 transition-all">
+                  Visit FAQ Center
+                </a>
+              </div>
+            </div>
+
+            {/* Right Column: Form */}
+            <div className="lg:col-span-7">
+              <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-gray-100">
+                <h2 className="text-3xl font-black text-gray-900 mb-8">Send a Message</h2>
+                
+                {success && (
+                  <div className="mb-8 p-6 bg-green-50 border border-green-100 rounded-2xl flex items-center gap-4 text-green-800 animate-fade-in">
+                    <div className="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-4 h-4 text-green-700" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-lg">Message Sent!</p>
+                      <p className="text-sm opacity-90">Thank you. We'll get back to you shortly.</p>
+                    </div>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="mb-8 p-6 bg-red-50 border border-red-100 rounded-2xl text-red-800">
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-700 uppercase tracking-wide ml-1">Your Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 transition-all font-medium outline-none"
+                        placeholder="John Doe"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-700 uppercase tracking-wide ml-1">Email Address</label>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 transition-all font-medium outline-none"
+                        placeholder="john@example.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-700 uppercase tracking-wide ml-1">Phone Number</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 transition-all font-medium outline-none"
+                        placeholder="+1 (555) 000-0000"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-700 uppercase tracking-wide ml-1">Subject</label>
+                      <input
+                        type="text"
+                        name="subject"
+                        required
+                        value={formData.subject}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 transition-all font-medium outline-none"
+                        placeholder="How can we help?"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700 uppercase tracking-wide ml-1">Message</label>
+                    <textarea
+                      name="message"
+                      required
+                      rows="6"
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 transition-all font-medium outline-none resize-y"
+                      placeholder="Tell us more about your inquiry..."
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-5 bg-black text-white font-bold rounded-2xl hover:bg-brand-orange transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <span className="flex items-center gap-2">Sending...</span>
+                    ) : (
+                      <>
+                        <span>Send Message</span>
+                        <Send className="w-5 h-5" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
 
-      {/* Main Content - Form & Details */}
-      <div className="max-w-4xl mx-auto px-6 lg:px-8 py-12 md:py-16">
-        {/* Alternative Contact Details */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {settings.contact_email && (
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100  text-center">
-              <Mail className="w-10 h-10 text-primary-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900  mb-2">Email Us</h3>
-              <a
-                href={`mailto:${settings.contact_email}`}
-                className="text-primary-600 hover:text-primary-700 font-medium break-words"
-              >
-                {settings.contact_email}
-              </a>
-            </div>
-          )}
-
-          {settings.contact_phone && (
-            <div className="bg-white  rounded-xl shadow-md p-6 border border-gray-100  text-center">
-              <Phone className="w-10 h-10 text-primary-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900  mb-2">Call Us</h3>
-              <a
-                href={`tel:${settings.contact_phone}`}
-                className="text-primary-600 hover:text-primary-700 font-medium"
-              >
-                {settings.contact_phone}
-              </a>
-            </div>
-          )}
-
-          {settings.address && (
-            <div className="bg-white  rounded-xl shadow-md p-6 border border-gray-100  text-center lg:col-span-1 sm:col-span-2">
-              <MapPin className="w-10 h-10 text-primary-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900  mb-2">Visit Us</h3>
-              <p className="text-gray-700  leading-relaxed">
-                {settings.address}
-              </p>
-            </div>
-          )}
+      {/* 3. Office Locations Map Placeholder (Optional visual filler) */}
+      <section className="py-12 pb-24">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="bg-[#F2F7F6] rounded-[3rem] h-96 w-full flex items-center justify-center relative overflow-hidden group">
+             {/* Use a static map image or pattern */}
+             <img 
+               src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" 
+               alt="Map Background" 
+               className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700"
+             />
+             <div className="relative z-10 bg-white/90 backdrop-blur-md px-10 py-6 rounded-3xl shadow-xl text-center">
+               <MapPin className="w-10 h-10 text-brand-orange mx-auto mb-3 animate-bounce" />
+               <h3 className="text-xl font-bold text-gray-900">Headquarters</h3>
+               <p className="text-gray-500">{settings.address || '123 Printer Street, Tech City'}</p>
+             </div>
+          </div>
         </div>
-        {/* Contact Form */}
-        <div className="bg-white  rounded-xl shadow-lg p-8 md:p-10 mb-12 border border-gray-100 ">
-          <h2 className="text-3xl font-bold text-gray-900  text-center mb-8">Send Us a Message</h2>
+      </section>
 
-          {success && (
-            <div className="mb-6 p-4 bg-green-50  border border-green-200  rounded-lg flex items-center gap-3 text-green-700 ">
-              <Check className="w-5 h-5 flex-shrink-0" />
-              <p className="text-sm font-medium">Message sent successfully! We'll reply within 24-48 hours.</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50  border border-red-200  rounded-lg text-red-700  text-sm">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700  mb-2">Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Your full name"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-gray-50  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700  mb-2">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="your@example.com"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-gray-50  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700  mb-2">Phone (Optional)</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+1 (123) 456-7890"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-gray-50  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700  mb-2">Subject</label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  required
-                  value={formData.subject}
-                  onChange={handleChange}
-                  placeholder="Regarding your order / General inquiry"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-gray-50  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-gray-700  mb-2">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                required
-                rows="5"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="How can we assist you today?"
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300  bg-gray-50  text-gray-900  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-y"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-6 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
-            >
-              {loading ? 'Sending...' : (
-                <>
-                  <Send className="w-5 h-5" />
-                  Send Message
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-
-
-
-
-      </div>
     </div>
   )
 }

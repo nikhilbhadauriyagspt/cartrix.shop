@@ -46,6 +46,7 @@ export default function AdminDashboard() {
         supabase.from('products').select('*', { count: 'exact', head: true }),
         supabase.from('blogs').select('*', { count: 'exact', head: true }),
         supabase.from('orders').select('total_amount').eq('website_id', websiteId),
+        supabase.rpc('admin_get_users_by_website', { target_website_id: websiteId }),
         supabase.rpc('admin_get_contact_submissions', { target_website_id: websiteId }),
         supabase
           .from('orders')

@@ -48,8 +48,8 @@ export const CartProvider = ({ children }) => {
     }
   }
 
-  const fetchGuestCart = async () => {
-    setLoading(true)
+  const fetchGuestCart = async (silent = false) => {
+    if (!silent) setLoading(true)
     try {
       const { data, error } = await supabase
         .from('cart_items')
@@ -65,7 +65,7 @@ export const CartProvider = ({ children }) => {
       console.error('Error fetching guest cart:', error)
       loadLocalCart()
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }
 
@@ -88,10 +88,10 @@ export const CartProvider = ({ children }) => {
     }
   }
 
-  const fetchCart = async () => {
+  const fetchCart = async (silent = false) => {
     if (!user) return
 
-    setLoading(true)
+    if (!silent) setLoading(true)
     try {
       const { data, error } = await supabase
         .from('cart_items')
@@ -106,7 +106,7 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       console.error('Error fetching cart:', error)
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }
 
@@ -130,7 +130,7 @@ export const CartProvider = ({ children }) => {
           if (error) throw error
         }
 
-        await fetchGuestCart()
+        await fetchGuestCart(true)
         return
       }
 
@@ -151,7 +151,7 @@ export const CartProvider = ({ children }) => {
         if (error) throw error
       }
 
-      await fetchCart()
+      await fetchCart(true)
     } catch (error) {
       console.error('Error adding to cart:', error)
       throw error
@@ -164,6 +164,11 @@ export const CartProvider = ({ children }) => {
       return
     }
 
+    // Optimistic Update
+    setCartItems(prev => prev.map(item => 
+      item.id === itemId ? { ...item, quantity } : item
+    ))
+
     try {
       const { error } = await supabase
         .from('cart_items')
@@ -172,18 +177,25 @@ export const CartProvider = ({ children }) => {
 
       if (error) throw error
 
+      // Silent fetch to ensure sync without loader
       if (user) {
-        await fetchCart()
+        await fetchCart(true)
       } else {
-        await fetchGuestCart()
+        await fetchGuestCart(true)
       }
     } catch (error) {
       console.error('Error updating quantity:', error)
+      // Revert on error (optional, but good practice)
+      if (user) await fetchCart(true)
+      else await fetchGuestCart(true)
       throw error
     }
   }
 
   const removeFromCart = async (itemId) => {
+    // Optimistic Remove
+    setCartItems(prev => prev.filter(item => item.id !== itemId))
+
     try {
       const { error } = await supabase
         .from('cart_items')
@@ -193,12 +205,14 @@ export const CartProvider = ({ children }) => {
       if (error) throw error
 
       if (user) {
-        await fetchCart()
+        await fetchCart(true)
       } else {
-        await fetchGuestCart()
+        await fetchGuestCart(true)
       }
     } catch (error) {
       console.error('Error removing from cart:', error)
+      if (user) await fetchCart(true)
+      else await fetchGuestCart(true)
       throw error
     }
   }
@@ -231,7 +245,9 @@ export const CartProvider = ({ children }) => {
 
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => {
-      return total + (parseFloat(item.products.price) * item.quantity)
+      // Ensure product exists and price is valid
+      if (!item.products || typeof item.products.price !== 'number') return total
+      return total + (item.products.price * item.quantity)
     }, 0)
   }
 

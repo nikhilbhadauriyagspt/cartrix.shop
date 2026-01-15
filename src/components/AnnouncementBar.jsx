@@ -38,14 +38,14 @@ export default function AnnouncementBar() {
   if (loading || !isVisible || !announcement) return null
 
   return (
-    <div className="bg-gradient-to-r from-primary-700 via-primary-600 to-accent-600 text-white py-3 px-4 relative shadow-lg">
-      <div className="max-w-7xl mx-auto flex items-center justify-center text-center">
-        <p className="text-sm font-bold whitespace-pre-line">
+    <div className="bg-brand-orange text-white py-2.5 relative z-50 animate-in fade-in slide-in-from-top-1 duration-500">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center text-center">
+        <p className="text-xs font-bold tracking-widest uppercase">
           {announcement}
         </p>
         <button
           onClick={() => setIsVisible(false)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 hover:bg-white/20 p-1.5 rounded-xl transition-all"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors"
           aria-label="Close announcement"
         >
           <X className="w-4 h-4" />

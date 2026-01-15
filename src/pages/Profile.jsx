@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { User, Lock, Save, AlertCircle, CheckCircle, ShoppingBag, LogOut, ChevronRight } from 'lucide-react'
+import { User, Lock, ShoppingBag, LogOut, ChevronRight, Package, Calendar, CreditCard, Check, AlertCircle } from 'lucide-react'
 
 export default function Profile() {
   const { user, signOut } = useAuth()
@@ -106,7 +106,7 @@ export default function Profile() {
       delivered: 'bg-green-100 text-green-800',
       cancelled: 'bg-red-100 text-red-800',
     }
-    return colors[status] || 'bg-slate-100 text-slate-800'
+    return colors[status] || 'bg-gray-100 text-gray-800'
   }
 
   const handleSignOut = async () => {
@@ -117,136 +117,217 @@ export default function Profile() {
   if (!user) return null
 
   const navItems = [
-    { id: 'profile', label: 'Profile Details', icon: User },
-    { id: 'orders', label: 'My Orders', icon: ShoppingBag },
-    { id: 'security', label: 'Security', icon: Lock },
+    { id: 'profile', label: 'My Details', icon: User },
+    { id: 'orders', label: 'Order History', icon: ShoppingBag },
+    { id: 'security', label: 'Login & Security', icon: Lock },
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 ">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="lg:grid lg:grid-cols-4 lg:gap-8">
+    <div className="min-h-screen bg-white font-sans text-gray-900">
+      
+      {/* Header */}
+      <div className="bg-[#F2F7F6] py-16 border-b border-[#e8f1f0]">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12">
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">My Account</h1>
+          <p className="text-gray-500 mt-4 font-medium text-lg">Manage your profile and view your orders.</p>
+        </div>
+      </div>
+
+      <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
+        <div className="grid lg:grid-cols-12 gap-12">
+          
           {/* Left Sidebar */}
-          <div className="lg:col-span-1 mb-8 lg:mb-0">
-            <div className="bg-white  rounded-2xl shadow-lg p-6">
-              <div className="flex flex-col items-center text-center mb-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center text-white text-4xl font-bold mb-4">
-                  {profileData.fullName?.charAt(0).toUpperCase()}
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 ">{profileData.fullName}</h2>
-                <p className="text-sm text-gray-500 ">{profileData.email}</p>
+          <div className="lg:col-span-3 space-y-8">
+            {/* User Card */}
+            <div className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm text-center">
+              <div className="w-24 h-24 bg-[#F9FAFB] rounded-full flex items-center justify-center text-gray-400 text-3xl font-black mb-6 mx-auto border-4 border-white shadow-lg">
+                {profileData.fullName?.charAt(0).toUpperCase() || <User />}
               </div>
-              <nav className="space-y-2">
-                {navItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium transition-colors ${activeTab === item.id
-                      ? 'bg-primary-50  text-primary-700 '
-                      : 'text-gray-600  hover:bg-gray-100 '
-                      }`}
-                  >
-                    <item.icon className="w-5 h-5" />
-                    <span className="flex-grow">{item.label}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                ))}
-                <button
-                  onClick={handleSignOut}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium transition-colors text-red-600  hover:bg-red-50 "
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span>Sign Out</span>
-                </button>
-              </nav>
+              <h2 className="text-xl font-bold text-gray-900 mb-1">{profileData.fullName}</h2>
+              <p className="text-sm text-gray-500 truncate">{profileData.email}</p>
             </div>
+
+            {/* Navigation */}
+            <nav className="space-y-2">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-left text-sm font-bold transition-all ${
+                    activeTab === item.id
+                      ? 'bg-black text-white shadow-lg'
+                      : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span className="flex-grow uppercase tracking-wider">{item.label}</span>
+                  {activeTab === item.id && <ChevronRight className="w-4 h-4" />}
+                </button>
+              ))}
+              <button
+                onClick={handleSignOut}
+                className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-left text-sm font-bold transition-all text-red-500 hover:bg-red-50 mt-4"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="uppercase tracking-wider">Sign Out</span>
+              </button>
+            </nav>
           </div>
 
-          {/* Right Content */}
-          <div className="lg:col-span-3">
-            <div className="bg-white  rounded-2xl shadow-lg p-6 sm:p-8">
+          {/* Right Content Area */}
+          <div className="lg:col-span-9">
+            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-gray-100 shadow-sm min-h-[600px]">
+              
+              {/* Feedback Messages */}
               {error && (
-                <div className="bg-red-50  border-l-4 border-red-400 p-4 mb-6">
-                  <div className="flex items-center gap-3">
-                    <AlertCircle className="h-5 w-5 text-red-600" />
-                    <p className="text-sm text-red-700 ">{error}</p>
-                  </div>
+                <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-sm font-bold flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5" />
+                  {error}
                 </div>
               )}
               {updateSuccess && (
-                <div className="bg-green-50  border-l-4 border-green-400 p-4 mb-6">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <p className="text-sm text-green-700 ">{updateSuccess}</p>
-                  </div>
+                <div className="mb-8 p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 text-sm font-bold flex items-center gap-3">
+                  <Check className="w-5 h-5" />
+                  {updateSuccess}
                 </div>
               )}
 
+              {/* Profile Tab */}
               {activeTab === 'profile' && (
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900  mb-6">Personal Information</h2>
-                  <form onSubmit={handleProfileUpdate} className="space-y-4">
-                    <div>
-                      <label htmlFor="fullName" className="block text-sm font-medium text-gray-700  mb-1">Full Name</label>
-                      <input type="text" id="fullName" required value={profileData.fullName} onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })} className="w-full px-4 py-2 bg-gray-50  border-gray-300  rounded-lg focus:ring-primary-500 focus:border-primary-500" />
+                <div className="max-w-2xl">
+                  <h2 className="text-3xl font-black text-gray-900 mb-8">Personal Information</h2>
+                  <form onSubmit={handleProfileUpdate} className="space-y-6">
+                    <div className="space-y-2">
+                      <label htmlFor="fullName" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                      <input
+                        type="text"
+                        id="fullName"
+                        required
+                        value={profileData.fullName}
+                        onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 outline-none transition-all font-medium"
+                      />
                     </div>
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700  mb-1">Email Address</label>
-                      <input type="email" id="email" required value={profileData.email} onChange={(e) => setProfileData({ ...profileData, email: e.target.value })} className="w-full px-4 py-2 bg-gray-50  border-gray-300  rounded-lg focus:ring-primary-500 focus:border-primary-500" />
+                    <div className="space-y-2">
+                      <label htmlFor="email" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                      <input
+                        type="email"
+                        id="email"
+                        required
+                        value={profileData.email}
+                        onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 outline-none transition-all font-medium"
+                      />
                     </div>
-                    <div className="pt-2">
-                      <button type="submit" disabled={loading} className="w-full sm:w-auto px-6 py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50">
-                        {loading ? 'Saving...' : 'Save Changes'}
-                      </button>
-                    </div>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="px-10 py-4 bg-brand-orange text-white font-bold rounded-2xl hover:bg-orange-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 mt-4 disabled:opacity-50"
+                    >
+                      {loading ? 'Saving...' : 'Save Changes'}
+                    </button>
                   </form>
                 </div>
               )}
 
+              {/* Orders Tab */}
               {activeTab === 'orders' && (
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900  mb-6">My Orders</h2>
-                  <div className="space-y-4">
+                  <h2 className="text-3xl font-black text-gray-900 mb-8">Order History</h2>
+                  <div className="space-y-6">
                     {orders.length > 0 ? (
                       orders.map(order => (
-                        <div key={order.id} className="p-4 border border-gray-200  rounded-lg">
-                          <div className="flex justify-between items-center mb-2">
-                            <p className="font-semibold text-gray-800 ">Order #{order.id.slice(0, 8)}</p>
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(order.status)}`}>{order.status}</span>
+                        <div key={order.id} className="group p-6 rounded-[2rem] border border-gray-100 hover:border-brand-orange/30 hover:shadow-lg transition-all duration-300 bg-[#F9FAFB] hover:bg-white">
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-brand-orange">
+                                <Package className="w-6 h-6" />
+                              </div>
+                              <div>
+                                <p className="font-bold text-gray-900">Order #{order.id.slice(0, 8).toUpperCase()}</p>
+                                <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mt-1 ${getStatusColor(order.status)}`}>
+                                  {order.status}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-2xl font-black text-gray-900">${order.total_amount.toFixed(2)}</p>
+                            </div>
                           </div>
-                          <p className="text-sm text-gray-500 ">Date: {new Date(order.created_at).toLocaleDateString()}</p>
-                          <p className="text-sm font-bold text-gray-700  mt-1">Total: ${order.total_amount.toFixed(2)}</p>
+                          
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-6 border-t border-gray-200/60">
+                            <div className="flex items-center gap-3 text-sm text-gray-500">
+                              <Calendar className="w-4 h-4" />
+                              {new Date(order.created_at).toLocaleDateString()}
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-gray-500">
+                              <CreditCard className="w-4 h-4" />
+                              {order.payment_method || 'Payment'}
+                            </div>
+                            <div className="col-span-2 md:col-span-1 text-right">
+                              <button className="text-sm font-bold text-brand-orange hover:underline">
+                                View Details
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-500 ">You have no orders yet.</p>
+                      <div className="text-center py-20 bg-gray-50 rounded-[2rem]">
+                        <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-xl font-bold text-gray-900">No orders found</h3>
+                        <p className="text-gray-500 mt-2">Looks like you haven't placed any orders yet.</p>
+                      </div>
                     )}
                   </div>
                 </div>
               )}
 
+              {/* Security Tab */}
               {activeTab === 'security' && (
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900  mb-6">Change Password</h2>
-                  <form onSubmit={handlePasswordUpdate} className="space-y-4">
-                    <div>
-                      <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700  mb-1">New Password</label>
-                      <input type="password" id="newPassword" required minLength={6} value={passwordData.newPassword} onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })} className="w-full px-4 py-2 bg-gray-50  border-gray-300  rounded-lg focus:ring-primary-500 focus:border-primary-500" />
+                <div className="max-w-2xl">
+                  <h2 className="text-3xl font-black text-gray-900 mb-8">Login & Security</h2>
+                  <form onSubmit={handlePasswordUpdate} className="space-y-6">
+                    <div className="space-y-2">
+                      <label htmlFor="newPassword" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">New Password</label>
+                      <input
+                        type="password"
+                        id="newPassword"
+                        required
+                        minLength={6}
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 outline-none transition-all font-medium"
+                        placeholder="••••••••"
+                      />
                     </div>
-                    <div>
-                      <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700  mb-1">Confirm New Password</label>
-                      <input type="password" id="confirmPassword" required minLength={6} value={passwordData.confirmPassword} onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} className="w-full px-4 py-2 bg-gray-50  border-gray-300  rounded-lg focus:ring-primary-500 focus:border-primary-500" />
+                    <div className="space-y-2">
+                      <label htmlFor="confirmPassword" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Confirm New Password</label>
+                      <input
+                        type="password"
+                        id="confirmPassword"
+                        required
+                        minLength={6}
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                        className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 outline-none transition-all font-medium"
+                        placeholder="••••••••"
+                      />
                     </div>
-                    <div className="pt-2">
-                      <button type="submit" disabled={loading} className="w-full sm:w-auto px-6 py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50">
-                        {loading ? 'Updating...' : 'Update Password'}
-                      </button>
-                    </div>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="px-10 py-4 bg-brand-orange text-white font-bold rounded-2xl hover:bg-orange-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 mt-4 disabled:opacity-50"
+                    >
+                      {loading ? 'Updating...' : 'Update Password'}
+                    </button>
                   </form>
                 </div>
               )}
+
             </div>
           </div>
+
         </div>
       </div>
     </div>
