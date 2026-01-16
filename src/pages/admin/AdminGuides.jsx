@@ -2,7 +2,22 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import AdminLayout from '../../components/AdminLayout'
 import ImageUpload from '../../components/ImageUpload'
-import { Plus, Edit, Trash2, X, ToggleLeft, ToggleRight, Search } from 'lucide-react'
+import { 
+  Plus, 
+  Edit, 
+  Trash2, 
+  X, 
+  ToggleLeft, 
+  ToggleRight, 
+  Search, 
+  Sparkles, 
+  ArrowRight,
+  Clock,
+  Tag,
+  Settings,
+  HelpCircle,
+  Award
+} from 'lucide-react'
 
 export default function AdminGuides() {
   const [guides, setGuides] = useState([])
@@ -263,111 +278,122 @@ export default function AdminGuides() {
 
   return (
     <AdminLayout>
-      <div>
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-3xl font-bold text-slate-900">Guide Management</h2>
-            <button
-              onClick={() => openModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-2xl hover:from-sky-700 hover:to-cyan-700 transition-colors font-bold"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Add Guide</span>
-            </button>
+      <div className="animate-fade-in font-sans selection:bg-brand-orange selection:text-white pb-20">
+        
+        {/* Header */}
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-100 text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-4 shadow-sm">
+              <Sparkles className="w-3 h-3" />
+              Knowledge Base
+            </div>
+            <h2 className="text-4xl font-black text-gray-900 tracking-tight">
+              Content <span className="text-gray-400">Guides.</span>
+            </h2>
+            <p className="text-gray-500 font-medium mt-2">Create and manage detailed buying guides and technical documentation.</p>
           </div>
+          
+          <button
+            onClick={() => openModal()}
+            className="flex items-center gap-2 px-8 py-4 bg-black text-white rounded-2xl hover:bg-brand-orange transition-all font-black text-[10px] uppercase tracking-widest shadow-xl transform hover:-translate-y-1"
+          >
+            <Plus className="w-4 h-4" />
+            New Guide
+          </button>
+        </div>
 
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+        {/* Search Bar */}
+        <div className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm mb-10 transition-all hover:shadow-xl hover:shadow-gray-200/50">
+          <div className="relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-brand-orange transition-colors" />
             <input
               type="text"
-              placeholder="Search guides by title or slug..."
+              placeholder="Search by title, slug or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+              className="w-full pl-16 pr-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
             />
           </div>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600"></div>
+          <div className="space-y-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white rounded-[3rem] h-24 animate-pulse border border-gray-50" />
+            ))}
+          </div>
+        ) : filteredGuides.length === 0 ? (
+          <div className="bg-[#F9FAFB] rounded-[4rem] border border-dashed border-gray-200 py-32 text-center">
+            <Plus className="w-16 h-16 text-gray-200 mx-auto mb-6" />
+            <h3 className="text-2xl font-black text-gray-900 mb-2">Library is empty</h3>
+            <p className="text-gray-400 font-medium">Try a different search or create your first guide.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-xl hover:shadow-gray-200/50">
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-slate-50 border-b-2 border-slate-200">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">#</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Guide</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Category</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">Actions</th>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-gray-100">
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] w-16">#</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Guide Info</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Type & Category</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-gray-50">
                   {filteredGuides.map((guide) => (
-                    <tr key={guide.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 text-sm font-semibold text-slate-700">
-                        {guide.guide_number || '-'}
+                    <tr key={guide.id} className="group hover:bg-[#F9FAFB] transition-colors duration-300">
+                      <td className="px-8 py-5">
+                        <span className="font-black text-gray-300 text-xs">{guide.guide_number || '-'}</span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={guide.image_url}
-                            alt={guide.title}
-                            className="w-16 h-16 rounded-2xl object-cover shadow-sm"
-                          />
-                          <div>
-                            <p className="font-bold text-slate-900">{guide.title}</p>
-                            <p className="text-sm text-slate-500">{guide.slug}</p>
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-5">
+                          <div className="w-16 h-16 rounded-2xl bg-white border border-gray-100 p-1 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
+                            <img
+                              src={guide.image_url}
+                              alt={guide.title}
+                              className="w-full h-full object-cover rounded-xl transition-transform duration-500 group-hover:scale-110"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight group-hover:text-brand-orange transition-colors line-clamp-1">{guide.title}</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">/{guide.slug}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-block px-2 py-1 text-xs font-bold bg-blue-100 text-blue-800 rounded">
-                          {guide.guide_type}
-                        </span>
+                      <td className="px-8 py-5">
+                        <div className="space-y-1.5">
+                          <span className="inline-block px-3 py-1 bg-gray-50 text-gray-500 text-[9px] font-black uppercase tracking-widest rounded-lg border border-gray-100">
+                            {guide.guide_type}
+                          </span>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">{guide.categories?.name || 'Knowledge'}</p>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-700">
-                        {guide.categories?.name || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-5">
                         <button
                           onClick={() => togglePublishStatus(guide)}
-                          className={`flex items-center gap-2 px-3 py-1 rounded-2xl text-sm font-bold transition-colors ${
+                          className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-300 ${
                             guide.is_published
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                              : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                              ? 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'
+                              : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100'
                           }`}
                         >
-                          {guide.is_published ? (
-                            <>
-                              <ToggleRight className="w-4 h-4" />
-                              Published
-                            </>
-                          ) : (
-                            <>
-                              <ToggleLeft className="w-4 h-4" />
-                              Draft
-                            </>
-                          )}
+                          {guide.is_published ? <ToggleRight className="w-3.5 h-3.5" /> : <ToggleLeft className="w-3.5 h-3.5" />}
+                          {guide.is_published ? 'Live' : 'Draft'}
                         </button>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-8 py-5 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
                           <button
                             onClick={() => openModal(guide)}
-                            className="p-2 text-sky-600 hover:bg-sky-50 rounded-2xl transition-colors"
-                            title="Edit"
+                            className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:border-black transition-all shadow-sm"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(guide.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-2xl transition-colors"
-                            title="Delete"
+                            className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-rose-500 hover:border-rose-100 hover:bg-rose-50 transition-all shadow-sm"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -381,386 +407,165 @@ export default function AdminGuides() {
           </div>
         )}
 
+        {/* Modal Redesign */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-            <div className="bg-white rounded-xl max-w-4xl w-full my-8">
-              <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 rounded-t-xl z-10">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-slate-900">
-                    {editingGuide ? 'Edit Guide' : 'Add New Guide'}
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
+            <div className="relative bg-white w-full max-w-5xl rounded-[3.5rem] overflow-hidden shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
+              
+              <div className="px-10 py-8 border-b border-gray-50 flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-black text-gray-900 tracking-tight">
+                    {editingGuide ? 'Update Guide' : 'New Publication'}
                   </h3>
-                  <button
-                    onClick={() => {
-                      setShowModal(false)
-                      setEditingGuide(null)
-                      resetForm()
-                    }}
-                    className="text-slate-400 hover:text-slate-600 transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
+                  <div className="flex gap-4 mt-4 overflow-x-auto no-scrollbar">
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`text-[10px] font-black uppercase tracking-widest pb-2 transition-all relative whitespace-nowrap ${
+                          activeTab === tab.id ? 'text-brand-orange' : 'text-gray-300 hover:text-gray-500'
+                        }`}
+                      >
+                        {tab.label}
+                        {activeTab === tab.id && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-orange rounded-full" />}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-
-                <div className="flex gap-2 mt-4 overflow-x-auto">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-4 py-2 rounded-2xl font-bold whitespace-nowrap transition-colors ${
-                        activeTab === tab.id
-                          ? 'bg-sky-600 text-white'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
+                <button onClick={() => { setShowModal(false); setEditingGuide(null); resetForm(); }} className="p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors">
+                  <X className="w-6 h-6 text-gray-400" />
+                </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[calc(90vh-200px)] overflow-y-auto">
+              <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-10 custom-scrollbar">
                 {activeTab === 'basic' && (
-                  <div className="space-y-4">
-                    <ImageUpload
-                      bucket="assets"
-                      folder="guides"
-                      currentImage={formData.image_url}
-                      onUploadComplete={handleImageUpload}
-                      label="Guide Image *"
-                    />
-
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        Guide Title *
-                      </label>
-                      <input
-                        type="text"
-                        name="title"
-                        required
-                        value={formData.title}
-                        onChange={(e) => {
-                          handleChange(e)
-                          if (!editingGuide) {
-                            setFormData(prev => ({ ...prev, slug: generateSlug(e.target.value) }))
-                          }
-                        }}
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        placeholder="Enter guide title"
-                      />
+                  <div className="space-y-10">
+                    <div className="p-8 rounded-[2.5rem] bg-gray-50 border border-dashed border-gray-200">
+                      <ImageUpload bucket="assets" folder="guides" currentImage={formData.image_url} onUploadComplete={handleImageUpload} label="Feature Artwork (16:9 preferred)" />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        Slug *
-                      </label>
-                      <input
-                        type="text"
-                        name="slug"
-                        required
-                        value={formData.slug}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        placeholder="guide-slug"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        Description *
-                      </label>
-                      <textarea
-                        name="description"
-                        required
-                        rows="2"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 resize-none"
-                        placeholder="Brief description of the guide"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        Category
-                      </label>
-                      <select
-                        name="category_id"
-                        value={formData.category_id}
-                        onChange={(e) => {
-                          handleChange(e)
-                          setFormData(prev => ({ ...prev, product_id: '' }))
-                        }}
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                      >
-                        <option value="">Select a category</option>
-                        {categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        Product (Optional)
-                      </label>
-                      <select
-                        name="product_id"
-                        value={formData.product_id}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        disabled={!formData.category_id}
-                      >
-                        <option value="">Select a product</option>
-                        {products
-                          .filter(product => !formData.category_id || product.category_id === formData.category_id)
-                          .map((product) => (
-                            <option key={product.id} value={product.id}>
-                              {product.name}
-                            </option>
-                          ))}
-                      </select>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Select a category first to see related products
-                      </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-3 md:col-span-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Guide Headline</label>
+                        <input type="text" name="title" required value={formData.title} onChange={(e) => { handleChange(e); if (!editingGuide) setFormData(prev => ({ ...prev, slug: generateSlug(e.target.value) })) }} className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-black text-xl tracking-tight" placeholder="e.g. The Ultimate 2024 Printing Guide" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">URL Slug</label>
+                        <input type="text" name="slug" required value={formData.slug} onChange={handleChange} className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm" placeholder="ultimate-printing-guide" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Catalog Category</label>
+                        <select name="category_id" value={formData.category_id} onChange={(e) => { handleChange(e); setFormData(prev => ({ ...prev, product_id: '' })) }} className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm appearance-none">
+                          <option value="">Select Category</option>
+                          {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="space-y-3 md:col-span-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Short Introduction</label>
+                        <textarea name="description" required rows="2" value={formData.description} onChange={handleChange} className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm resize-none" placeholder="Provide a hook for your readers..." />
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'content' && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        Content * (HTML supported)
-                      </label>
-                      <textarea
-                        name="content"
-                        required
-                        rows="12"
-                        value={formData.content}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 resize-none font-mono text-sm"
-                        placeholder="Full guide content with HTML formatting..."
-                      />
-                      <p className="text-xs text-slate-500 mt-1">
-                        You can use HTML tags like &lt;h2&gt;, &lt;h3&gt;, &lt;p&gt;, &lt;strong&gt;, etc.
-                      </p>
-                    </div>
+                  <div className="space-y-6">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Main Article Body (HTML Supported)</label>
+                    <textarea name="content" required rows="15" value={formData.content} onChange={handleChange} className="w-full px-10 py-10 rounded-[3rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-medium text-lg leading-relaxed resize-none shadow-inner custom-scrollbar" placeholder="Start writing your guide here..." />
                   </div>
                 )}
 
                 {activeTab === 'settings' && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">
-                          Guide Type
-                        </label>
-                        <select
-                          name="guide_type"
-                          value={formData.guide_type}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        >
-                          {guideTypes.map((type) => (
-                            <option key={type} value={type}>{type}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">
-                          Guide Number
-                        </label>
-                        <input
-                          type="number"
-                          name="guide_number"
-                          min="1"
-                          value={formData.guide_number || ''}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                          placeholder="1"
-                        />
-                      </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Publication Type</label>
+                      <select name="guide_type" value={formData.guide_type} onChange={handleChange} className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-black text-[10px] uppercase tracking-widest appearance-none">
+                        {guideTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                      </select>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">
-                          Icon Name
-                        </label>
-                        <select
-                          name="icon_name"
-                          value={formData.icon_name}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        >
-                          {iconOptions.map((icon) => (
-                            <option key={icon} value={icon}>{icon}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">
-                          Color Scheme
-                        </label>
-                        <select
-                          name="color_scheme"
-                          value={formData.color_scheme}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        >
-                          {colorOptions.map((color) => (
-                            <option key={color} value={color}>{color}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Read Time (Min)</label>
+                      <input type="number" name="read_time" min="1" value={formData.read_time} onChange={handleChange} className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-black text-sm" />
                     </div>
-
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        Read Time (minutes)
-                      </label>
-                      <input
-                        type="number"
-                        name="read_time"
-                        min="1"
-                        value={formData.read_time}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        placeholder="5"
-                      />
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Identity Icon</label>
+                      <select name="icon_name" value={formData.icon_name} onChange={handleChange} className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-black text-[10px] uppercase tracking-widest appearance-none">
+                        {iconOptions.map((i) => <option key={i} value={i}>{i}</option>)}
+                      </select>
                     </div>
-
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="is_published"
-                        name="is_published"
-                        checked={formData.is_published}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500"
-                      />
-                      <label htmlFor="is_published" className="ml-2 text-sm font-bold text-slate-700">
-                        Publish Guide
-                      </label>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Theme Hue</label>
+                      <select name="color_scheme" value={formData.color_scheme} onChange={handleChange} className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-black text-[10px] uppercase tracking-widest appearance-none">
+                        {colorOptions.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-4 px-2">
+                      <input type="checkbox" id="pub_status" name="is_published" checked={formData.is_published} onChange={handleChange} className="w-6 h-6 border-2 border-gray-100 rounded-lg text-brand-orange focus:ring-brand-orange/20 accent-brand-orange" />
+                      <label htmlFor="pub_status" className="text-xs font-black text-gray-900 uppercase tracking-widest cursor-pointer">Live Publication</label>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'extras' && (
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        FAQs
-                      </label>
-                      <div className="space-y-3 mb-3">
-                        {formData.faqs.map((faq, index) => (
-                          <div key={index} className="p-3 bg-slate-50 rounded-2xl">
-                            <div className="flex justify-between items-start mb-1">
-                              <p className="font-bold text-sm text-slate-900">Q: {faq.question}</p>
-                              <button
-                                type="button"
-                                onClick={() => removeFaq(index)}
-                                className="text-red-600 hover:text-red-700"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
+                  <div className="space-y-12">
+                    <div className="space-y-6">
+                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Supplemental FAQs</h4>
+                      <div className="grid gap-4">
+                        {formData.faqs.map((faq, idx) => (
+                          <div key={idx} className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 flex justify-between items-start">
+                            <div>
+                              <p className="text-xs font-black text-gray-900 uppercase tracking-tight mb-1">Q: {faq.question}</p>
+                              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">A: {faq.answer}</p>
                             </div>
-                            <p className="text-sm text-slate-600">A: {faq.answer}</p>
+                            <button type="button" onClick={() => removeFaq(idx)} className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><X className="w-4 h-4" /></button>
                           </div>
                         ))}
                       </div>
-                      <div className="space-y-2">
-                        <input
-                          type="text"
-                          value={newFaq.question}
-                          onChange={(e) => setNewFaq({ ...newFaq, question: e.target.value })}
-                          className="w-full px-4 py-2 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                          placeholder="FAQ Question"
-                        />
-                        <textarea
-                          value={newFaq.answer}
-                          onChange={(e) => setNewFaq({ ...newFaq, answer: e.target.value })}
-                          className="w-full px-4 py-2 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 resize-none"
-                          rows="2"
-                          placeholder="FAQ Answer"
-                        />
-                        <button
-                          type="button"
-                          onClick={addFaq}
-                          className="w-full px-4 py-2 bg-sky-600 text-white rounded-2xl hover:bg-sky-700"
-                        >
-                          Add FAQ
-                        </button>
+                      <div className="p-8 rounded-[2.5rem] border border-gray-100 space-y-4">
+                        <input type="text" value={newFaq.question} onChange={(e) => setNewFaq({ ...newFaq, question: e.target.value })} className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none font-bold text-xs" placeholder="Question Title" />
+                        <textarea value={newFaq.answer} onChange={(e) => setNewFaq({ ...newFaq, answer: e.target.value })} className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none font-bold text-xs resize-none" rows="2" placeholder="Answer Details" />
+                        <button type="button" onClick={addFaq} className="w-full py-4 bg-black text-white rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-brand-orange transition-all">Add to list</button>
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
-                        Key Takeaways
-                      </label>
-                      <div className="space-y-2 mb-2">
-                        {formData.key_takeaways.map((takeaway, index) => (
-                          <div key={index} className="flex items-center gap-2 p-2 bg-green-50 rounded">
-                            <span className="flex-1 text-sm">{takeaway}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeTakeaway(index)}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
+                    <div className="space-y-6">
+                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Crucial Takeaways</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.key_takeaways.map((t, idx) => (
+                          <div key={idx} className="flex items-center gap-3 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100">
+                            <span className="text-[10px] font-black uppercase tracking-widest">{t}</span>
+                            <button type="button" onClick={() => removeTakeaway(idx)}><X className="w-3 h-3" /></button>
                           </div>
                         ))}
                       </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={newTakeaway}
-                          onChange={(e) => setNewTakeaway(e.target.value)}
-                          className="flex-1 px-4 py-2 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                          placeholder="Add a key takeaway"
-                        />
-                        <button
-                          type="button"
-                          onClick={addTakeaway}
-                          className="px-4 py-2 bg-sky-600 text-white rounded-2xl hover:bg-sky-700"
-                        >
-                          <Plus className="w-5 h-5" />
-                        </button>
+                      <div className="flex gap-3">
+                        <input type="text" value={newTakeaway} onChange={(e) => setNewTakeaway(e.target.value)} className="flex-1 px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none font-bold text-xs" placeholder="Core insight..." />
+                        <button type="button" onClick={addTakeaway} className="px-8 py-4 bg-black text-white rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-brand-orange transition-all"><Plus className="w-4 h-4" /></button>
                       </div>
                     </div>
                   </div>
                 )}
-
-                <div className="flex gap-3 pt-4 border-t border-slate-200 sticky bottom-0 bg-white">
-                  <button
-                    type="submit"
-                    disabled={!formData.image_url}
-                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-2xl hover:from-sky-700 hover:to-cyan-700 transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {editingGuide ? 'Update Guide' : 'Add Guide'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowModal(false)
-                      setEditingGuide(null)
-                      resetForm()
-                    }}
-                    className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-2xl hover:bg-slate-200 transition-colors font-bold"
-                  >
-                    Cancel
-                  </button>
-                </div>
               </form>
+
+              <div className="px-10 py-8 bg-gray-50 border-t border-gray-100 flex gap-4">
+                <button type="submit" onClick={handleSubmit} disabled={!formData.image_url} className="flex-1 py-5 bg-black text-white font-black rounded-2xl hover:bg-brand-orange transition-all duration-500 shadow-xl uppercase tracking-[0.2em] text-xs transform hover:-translate-y-1 disabled:opacity-50">
+                  {editingGuide ? 'Save Publication' : 'Launch Publication'}
+                </button>
+                <button type="button" onClick={() => { setShowModal(false); setEditingGuide(null); resetForm(); }} className="px-10 py-5 bg-white text-gray-400 font-black rounded-2xl border border-gray-200 hover:text-black hover:border-black transition-all uppercase tracking-[0.2em] text-xs">Discard</button>
+              </div>
             </div>
           </div>
         )}
       </div>
+
+      <style jsx global>{`
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slide-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+        .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+      `}</style>
     </AdminLayout>
   )
 }

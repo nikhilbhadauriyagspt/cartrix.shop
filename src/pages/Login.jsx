@@ -1,19 +1,31 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react'
+import { Lock, Mail, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const { signIn, signInWithGoogle } = useAuth()
+  const { websiteId } = useWebsite()
   const navigate = useNavigate()
 
   useEffect(() => {
-    document.title = 'Login - Access Your Account'
+    document.title = 'Login - Modern Workspace'
+    window.scrollTo(0, 0)
   }, [])
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true)
+      await signInWithGoogle(websiteId)
+    } catch (err) {
+      setError(err.message || 'Failed to sign in with Google')
+      setLoading(false)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -31,110 +43,142 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F2F7F6] p-6 relative overflow-hidden font-sans">
-      {/* Soft Background Decor */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-orange/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+    <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB] p-6 relative overflow-hidden font-sans selection:bg-brand-orange selection:text-white">
+      
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-orange/[0.03] rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-orange/[0.03] rounded-full blur-[120px] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
 
-      <div className="relative z-10 w-full max-w-[480px]">
-        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-gray-100">
+      <div className="relative z-10 w-full max-w-[500px] animate-slide-up">
+        <div className="bg-white rounded-[3.5rem] p-10 md:p-14 shadow-2xl shadow-gray-200/50 border border-gray-100">
           
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Lock className="w-8 h-8 text-brand-orange" strokeWidth={1.5} />
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-8 shadow-sm">
+              <Sparkles className="w-3 h-3" />
+              Portal Access
             </div>
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3 tracking-tight">Welcome Back</h2>
-            <p className="text-gray-500 font-medium italic">Enter your details to access your account</p>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
+              Welcome <br />
+              <span className="text-gray-400">Back.</span>
+            </h2>
           </div>
 
           {error && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-sm font-medium flex items-center gap-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+            <div className="mb-8 p-5 bg-rose-50 border border-rose-100 rounded-[2rem] text-rose-600 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-4 animate-shake shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-rose-500 shadow-sm">
+                <Lock className="w-4 h-4" />
+              </div>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+              <div className="relative group">
+                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-brand-orange transition-colors" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-14 pr-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 outline-none transition-all font-medium"
+                  className="w-full pl-16 pr-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
                   placeholder="name@company.com"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex justify-between items-center ml-1">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Password</label>
-                <Link to="/forgot-password" size="sm" className="text-xs font-bold text-brand-orange hover:text-orange-700 transition-colors">
-                  Forgot?
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
+                <Link to="/forgot-password" size="sm" className="text-[10px] font-bold text-brand-orange hover:text-black uppercase tracking-widest transition-colors">
+                  Forgot Password?
                 </Link>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+              <div className="relative group">
+                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-brand-orange transition-colors" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-14 pr-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-0 outline-none transition-all font-medium"
+                  className="w-full pl-16 pr-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-3 ml-1">
+            <div className="flex items-center gap-4 ml-2">
               <input
                 id="remember_me"
                 type="checkbox"
-                className="w-5 h-5 border-2 border-gray-200 rounded text-brand-orange focus:ring-brand-orange cursor-pointer"
+                className="w-6 h-6 border-2 border-gray-100 rounded-lg text-brand-orange focus:ring-brand-orange/20 cursor-pointer accent-brand-orange"
               />
-              <label htmlFor="remember_me" className="text-sm font-bold text-gray-500 cursor-pointer">
-                Keep me signed in
+              <label htmlFor="remember_me" className="text-xs font-bold text-gray-400 cursor-pointer uppercase tracking-widest">
+                Keep me authenticated
               </label>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-5 bg-black text-white font-bold rounded-2xl hover:bg-brand-orange transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed mt-8"
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Authenticating...</span>
-                </div>
-              ) : (
-                <>
-                  <span>Sign In</span>
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
+            <div className="space-y-4 mt-10">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-6 bg-black text-white font-black rounded-2xl hover:bg-brand-orange transition-all duration-500 shadow-2xl shadow-gray-200 uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 transform hover:-translate-y-1 disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={loading}
+                className="w-full py-6 bg-white text-gray-900 font-black rounded-2xl border-2 border-gray-100 hover:border-black transition-all duration-500 uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 transform hover:-translate-y-1 disabled:opacity-50"
+              >
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+                <span>Sign in with Google</span>
+              </button>
+            </div>
           </form>
 
-          <div className="mt-10 pt-8 border-t border-gray-50 text-center">
-            <p className="text-gray-500 font-medium">
+          <div className="mt-12 pt-10 border-t border-gray-50 text-center">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               Don't have an account?{' '}
-              <Link to="/signup" className="text-brand-orange font-bold hover:underline">
-                Create One
+              <Link to="/signup" className="text-brand-orange hover:text-black transition-colors ml-1">
+                Create Account
               </Link>
             </p>
           </div>
           
-          <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold text-gray-300 uppercase tracking-[0.2em]">
-            <ShieldCheck className="w-4 h-4" /> Secure Auth Environment
+          <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-black text-gray-200 uppercase tracking-[0.3em]">
+            <ShieldCheck className="w-4 h-4" /> SSL Encrypted
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes slide-up {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
+      `}</style>
     </div>
   )
 }

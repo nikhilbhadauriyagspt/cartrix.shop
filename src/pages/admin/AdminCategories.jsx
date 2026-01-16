@@ -1,7 +1,19 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import AdminLayout from '../../components/AdminLayout'
-import { Plus, Edit, Trash2, X, ToggleLeft, ToggleRight, Search, Copy } from 'lucide-react'
+import { 
+  Plus, 
+  Edit, 
+  Trash2, 
+  X, 
+  ToggleLeft, 
+  ToggleRight, 
+  Search, 
+  Copy,
+  Tag,
+  Sparkles,
+  ArrowRight
+} from 'lucide-react'
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([])
@@ -149,110 +161,120 @@ export default function AdminCategories() {
 
   return (
     <AdminLayout>
-      <div>
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-3xl font-bold text-slate-900">Category Management</h2>
-            <button
-              onClick={() => openModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-2xl hover:from-sky-700 hover:to-cyan-700 transition-colors font-bold"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Add Category</span>
-            </button>
+      <div className="animate-fade-in font-sans selection:bg-brand-orange selection:text-white pb-20">
+        
+        {/* Header */}
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-100 text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-4 shadow-sm">
+              <Tag className="w-3 h-3" />
+              Taxonomy Management
+            </div>
+            <h2 className="text-4xl font-black text-gray-900 tracking-tight">
+              Product <span className="text-gray-400">Categories.</span>
+            </h2>
+            <p className="text-gray-500 font-medium mt-2">Organize your store catalog for better discovery.</p>
           </div>
+          
+          <button
+            onClick={() => openModal()}
+            className="flex items-center gap-2 px-8 py-4 bg-black text-white rounded-2xl hover:bg-brand-orange transition-all font-black text-[10px] uppercase tracking-widest shadow-xl transform hover:-translate-y-1"
+          >
+            <Plus className="w-4 h-4" />
+            Create Category
+          </button>
+        </div>
 
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+        {/* Search Bar */}
+        <div className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm mb-10 transition-all hover:shadow-xl hover:shadow-gray-200/50">
+          <div className="relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-brand-orange transition-colors" />
             <input
               type="text"
-              placeholder="Search categories by name or slug..."
+              placeholder="Search by category name or slug..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+              className="w-full pl-16 pr-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
             />
           </div>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600"></div>
+          <div className="space-y-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white rounded-[3rem] h-24 animate-pulse border border-gray-50" />
+            ))}
+          </div>
+        ) : filteredCategories.length === 0 ? (
+          <div className="bg-[#F9FAFB] rounded-[4rem] border border-dashed border-gray-200 py-32 text-center">
+            <Tag className="w-16 h-16 text-gray-200 mx-auto mb-6" />
+            <h3 className="text-2xl font-black text-gray-900 mb-2">No categories found</h3>
+            <p className="text-gray-400 font-medium">Try a different search or create a new category.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl shadow-md overflow-hidden">
+          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-xl hover:shadow-gray-200/50">
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-slate-50 border-b-2 border-slate-200">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Category Name</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Category ID</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Slug</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Description</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-bold text-slate-700 uppercase tracking-wider">Actions</th>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-gray-100">
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Category</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Identifier</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Visibility</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-gray-50">
                   {filteredCategories.map((category) => (
-                    <tr key={category.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <p className="font-bold text-slate-900">{category.name}</p>
+                    <tr key={category.id} className="group hover:bg-[#F9FAFB] transition-colors duration-300">
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand-orange group-hover:text-white transition-all duration-500 shadow-inner">
+                            <Tag className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight group-hover:text-brand-orange transition-colors">{category.name}</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{category.slug}</p>
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-5">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded">
-                            {category.id.substring(0, 8)}...
+                          <span className="font-mono text-[10px] font-black text-gray-400 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100">
+                            {category.id.slice(0, 8).toUpperCase()}
                           </span>
                           <button
                             onClick={() => copyToClipboard(category.id)}
-                            className="p-1.5 text-sky-600 hover:bg-sky-50 rounded transition-colors"
+                            className="p-2 text-gray-300 hover:text-brand-orange transition-colors"
                             title="Copy full ID"
                           >
-                            <Copy className="w-4 h-4" />
+                            <Copy className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-600">
-                        {category.slug}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-700">
-                        {category.description || 'No description'}
-                      </td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-5">
                         <button
                           onClick={() => toggleCategoryStatus(category)}
-                          className={`flex items-center gap-2 px-3 py-1 rounded-2xl text-sm font-bold transition-colors ${
+                          className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-300 ${
                             category.is_active
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                              : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                              ? 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'
+                              : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100'
                           }`}
                         >
-                          {category.is_active ? (
-                            <>
-                              <ToggleRight className="w-4 h-4" />
-                              Active
-                            </>
-                          ) : (
-                            <>
-                              <ToggleLeft className="w-4 h-4" />
-                              Inactive
-                            </>
-                          )}
+                          {category.is_active ? <ToggleRight className="w-3.5 h-3.5" /> : <ToggleLeft className="w-3.5 h-3.5" />}
+                          {category.is_active ? 'Public' : 'Hidden'}
                         </button>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-8 py-5 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
                           <button
                             onClick={() => openModal(category)}
-                            className="p-2 text-sky-600 hover:bg-sky-50 rounded-2xl transition-colors"
-                            title="Edit"
+                            className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:border-black transition-all shadow-sm"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(category.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-2xl transition-colors"
-                            title="Delete"
+                            className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-rose-500 hover:border-rose-100 hover:bg-rose-50 transition-all shadow-sm"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -266,32 +288,29 @@ export default function AdminCategories() {
           </div>
         )}
 
+        {/* Modal Redesign */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 rounded-t-xl">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-slate-900">
-                    {editingCategory ? 'Edit Category' : 'Add New Category'}
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
+            <div className="relative bg-white w-full max-w-2xl rounded-[3.5rem] overflow-hidden shadow-2xl animate-slide-up flex flex-col">
+              
+              <div className="px-10 py-8 border-b border-gray-50 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-xl">
+                    <Tag className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 tracking-tight">
+                    {editingCategory ? 'Update Category' : 'New Category'}
                   </h3>
-                  <button
-                    onClick={() => {
-                      setShowModal(false)
-                      setEditingCategory(null)
-                      resetForm()
-                    }}
-                    className="text-slate-400 hover:text-slate-600 transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
                 </div>
+                <button onClick={() => { setShowModal(false); setEditingCategory(null); resetForm(); }} className="p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors">
+                  <X className="w-6 h-6 text-gray-400" />
+                </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
-                    Category Name *
-                  </label>
+              <form onSubmit={handleSubmit} className="p-10 space-y-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Category Name</label>
                   <input
                     type="text"
                     name="name"
@@ -303,69 +322,63 @@ export default function AdminCategories() {
                         setFormData(prev => ({ ...prev, slug: generateSlug(e.target.value) }))
                       }
                     }}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                    placeholder="Enter category name"
+                    className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
+                    placeholder="e.g. Inkjet Printers"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
-                    Slug *
-                  </label>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">URL Slug</label>
                   <input
                     type="text"
                     name="slug"
                     required
                     value={formData.slug}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                    placeholder="category-slug"
+                    className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
+                    placeholder="inkjet-printers"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
-                    Description
-                  </label>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Short Description</label>
                   <textarea
                     name="description"
                     rows="3"
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 resize-none"
-                    placeholder="Enter category description"
+                    className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm resize-none"
+                    placeholder="Describe this category collection..."
                   />
                 </div>
 
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="is_active"
-                    name="is_active"
-                    checked={formData.is_active}
-                    onChange={handleChange}
-                    className="w-4 h-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500"
-                  />
-                  <label htmlFor="is_active" className="ml-2 text-sm font-bold text-slate-700">
-                    Active Status
-                  </label>
+                <div className="flex items-center gap-4 px-2">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="is_active"
+                      name="is_active"
+                      checked={formData.is_active}
+                      onChange={handleChange}
+                      className="w-6 h-6 border-2 border-gray-100 rounded-lg text-brand-orange focus:ring-brand-orange/20 cursor-pointer accent-brand-orange"
+                    />
+                    <label htmlFor="is_active" className="text-xs font-black text-gray-900 uppercase tracking-widest cursor-pointer">
+                      Make public on store
+                    </label>
+                  </div>
                 </div>
 
-                <div className="flex gap-3 pt-4 border-t border-slate-200">
+                <div className="flex gap-4 pt-6 border-t border-gray-50">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-2xl hover:from-sky-700 hover:to-cyan-700 transition-colors font-bold"
+                    className="flex-1 py-5 bg-black text-white font-black rounded-2xl hover:bg-brand-orange transition-all duration-500 shadow-xl uppercase tracking-[0.2em] text-xs transform hover:-translate-y-1"
                   >
-                    {editingCategory ? 'Update Category' : 'Add Category'}
+                    {editingCategory ? 'Save Changes' : 'Confirm & Create'}
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      setShowModal(false)
-                      setEditingCategory(null)
-                      resetForm()
-                    }}
-                    className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-2xl hover:bg-slate-200 transition-colors font-bold"
+                    onClick={() => { setShowModal(false); setEditingCategory(null); resetForm(); }}
+                    className="px-10 py-5 bg-white text-gray-400 font-black rounded-2xl border border-gray-200 hover:text-black hover:border-black transition-all uppercase tracking-[0.2em] text-xs"
                   >
                     Cancel
                   </button>
@@ -375,6 +388,19 @@ export default function AdminCategories() {
           </div>
         )}
       </div>
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slide-up {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+        .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
+      `}</style>
     </AdminLayout>
   )
 }

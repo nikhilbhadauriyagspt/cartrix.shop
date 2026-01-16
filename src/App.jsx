@@ -9,6 +9,7 @@ import { ToastProvider } from './contexts/ToastContext'
 import AdminProtectedRoute from './components/AdminProtectedRoute'
 import AnnouncementBar from './components/AnnouncementBar'
 import Header from './components/Header'
+import CartDrawer from './components/CartDrawer'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
@@ -116,6 +117,7 @@ function App() {
               <Route path="*" element={
                 <div className="flex flex-col min-h-screen">
                   <Header />
+                  <CartDrawer />
                   <main className="flex-1">
                     <Routes>
                       <Route path="/" element={<Home />} />

@@ -33,7 +33,7 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
-        'brand-orange': '#ff6333',
+        'brand-orange': '#0d9488',
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -68,5 +68,6 @@ export default {
   },
   plugins: [
     require('@tailwindcss/typography'),
+    require('tailwindcss-animate'),
   ],
 }

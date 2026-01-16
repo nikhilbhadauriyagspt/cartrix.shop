@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useWebsite } from '../../contexts/WebsiteContext'
-import { Plus, Edit2, Trash2, Save, X, AlertCircle, CheckCircle } from 'lucide-react'
+import { Plus, Edit2, Trash2, Save, X, AlertCircle, CheckCircle, HelpCircle, ArrowRight } from 'lucide-react'
 import AdminLayout from '../../components/AdminLayout'
 
 export default function AdminFAQs() {
@@ -142,173 +142,221 @@ export default function AdminFAQs() {
 
   return (
     <AdminLayout>
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8 flex justify-between items-center">
+      <div className="animate-fade-in font-sans selection:bg-brand-orange selection:text-white pb-20">
+        
+        {/* Header */}
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Manage FAQs</h1>
-            <p className="text-gray-600">Add, edit, or remove frequently asked questions</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-100 text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-4 shadow-sm">
+              <HelpCircle className="w-3 h-3" />
+              Support Content
+            </div>
+            <h2 className="text-4xl font-black text-gray-900 tracking-tight">
+              Store <span className="text-gray-400">FAQs.</span>
+            </h2>
+            <p className="text-gray-500 font-medium mt-2">Manage frequently asked questions for your customers.</p>
           </div>
+          
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-8 py-4 bg-black text-white rounded-2xl hover:bg-brand-orange transition-all font-black text-[10px] uppercase tracking-widest shadow-xl transform hover:-translate-y-1"
           >
-            <Plus size={20} />
-            Add FAQ
+            <Plus className="w-4 h-4" />
+            Create FAQ
           </button>
         </div>
 
-      {message.text && (
-        <div className={`mb-6 p-4 rounded-2xl flex items-center gap-2 ${
-          message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-        }`}>
-          {message.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-          <span>{message.text}</span>
-        </div>
-      )}
-
-      {showForm && (
-        <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">
-              {editingId ? 'Edit FAQ' : 'Add New FAQ'}
-            </h2>
-            <button onClick={resetForm} className="text-gray-500 hover:text-gray-700">
-              <X size={24} />
-            </button>
+        {/* Feedback Messages */}
+        {message.text && (
+          <div className={`mb-8 p-5 rounded-[2rem] border flex items-center gap-4 animate-slide-up shadow-sm ${
+            message.type === 'success' 
+              ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
+              : 'bg-rose-50 border-rose-100 text-rose-600'
+          }`}>
+            <div className={`w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm ${
+              message.type === 'success' ? 'text-emerald-500' : 'text-rose-500'
+            }`}>
+              {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest">{message.text}</span>
           </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Question *
-              </label>
-              <input
-                type="text"
-                value={formData.question}
-                onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter the question"
-              />
+        {/* Form Modal-like inline */}
+        {showForm && (
+          <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-2xl shadow-gray-200/50 mb-12 animate-slide-up relative overflow-hidden">
+            <div className="flex justify-between items-center mb-10">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shadow-lg">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+                  {editingId ? 'Update FAQ' : 'New Entry'}
+                </h2>
+              </div>
+              <button onClick={resetForm} className="p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Answer *
-              </label>
-              <textarea
-                value={formData.answer}
-                onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-                required
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter the answer"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Display Order
-                </label>
+            <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Question Content</label>
                 <input
-                  type="number"
-                  value={formData.display_order}
-                  onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  type="text"
+                  value={formData.question}
+                  onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+                  required
+                  className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
+                  placeholder="e.g. What is your return policy?"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Status
-                </label>
-                <select
-                  value={formData.is_active ? 'active' : 'inactive'}
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.value === 'active' })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Answer Content</label>
+                <textarea
+                  value={formData.answer}
+                  onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
+                  required
+                  rows={4}
+                  className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm resize-none"
+                  placeholder="Provide a clear and detailed answer..."
+                />
               </div>
-            </div>
 
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={resetForm}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors"
-              >
-                <Save size={20} />
-                {editingId ? 'Update FAQ' : 'Add FAQ'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Display Priority</label>
+                  <input
+                    type="number"
+                    value={formData.display_order}
+                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+                    className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-black text-sm"
+                  />
+                </div>
 
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Order</th>
-              <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Question</th>
-              <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {faqs.length === 0 ? (
-              <tr>
-                <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
-                  No FAQs found. Add your first FAQ to get started.
-                </td>
-              </tr>
-            ) : (
-              faqs.map((faq) => (
-                <tr key={faq.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-900">{faq.display_order}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{faq.question}</td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => toggleStatus(faq)}
-                      className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        faq.is_active
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {faq.is_active ? 'Active' : 'Inactive'}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 text-right space-x-2">
-                    <button
-                      onClick={() => handleEdit(faq)}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(faq.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </td>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Visibility Status</label>
+                  <select
+                    value={formData.is_active ? 'active' : 'inactive'}
+                    onChange={(e) => setFormData({ ...formData, is_active: e.target.value === 'active' })}
+                    className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-black text-[10px] uppercase tracking-widest appearance-none cursor-pointer"
+                  >
+                    <option value="active">Visible to Customers</option>
+                    <option value="inactive">Hidden (Draft)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-6 border-t border-gray-50">
+                <button
+                  type="submit"
+                  className="flex-1 py-5 bg-black text-white font-black rounded-2xl hover:bg-brand-orange transition-all duration-500 shadow-xl uppercase tracking-[0.2em] text-xs transform hover:-translate-y-1"
+                >
+                  {editingId ? 'Save Changes' : 'Publish FAQ'}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-10 py-5 bg-white text-gray-400 font-black rounded-2xl border border-gray-200 hover:text-black hover:border-black transition-all uppercase tracking-[0.2em] text-xs"
+                >
+                  Discard
+                </button>
+              </div>
+            </form>
+            {/* Decorative blob */}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-brand-orange/[0.03] rounded-full blur-3xl pointer-events-none"></div>
+          </div>
+        )}
+
+        {/* Table List */}
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-xl hover:shadow-gray-200/50">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50/50 border-b border-gray-100">
+                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] w-20">Order</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">FAQ Question</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Actions</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {faqs.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="px-8 py-20 text-center">
+                      <div className="flex flex-col items-center">
+                        <HelpCircle className="w-12 h-12 text-gray-100 mb-4" />
+                        <p className="text-gray-400 font-black uppercase tracking-widest text-[10px]">No FAQs Found</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  faqs.map((faq) => (
+                    <tr key={faq.id} className="group hover:bg-[#F9FAFB] transition-colors duration-300">
+                      <td className="px-8 py-5">
+                        <span className="font-black text-gray-900 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 text-xs">
+                          {faq.display_order}
+                        </span>
+                      </td>
+                      <td className="px-8 py-5">
+                        <p className="text-sm font-black text-gray-900 uppercase tracking-tight group-hover:text-brand-orange transition-colors line-clamp-1">
+                          {faq.question}
+                        </p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 line-clamp-1 opacity-60">
+                          {faq.answer}
+                        </p>
+                      </td>
+                      <td className="px-8 py-5">
+                        <button
+                          onClick={() => toggleStatus(faq)}
+                          className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-300 ${
+                            faq.is_active
+                              ? 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'
+                              : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100'
+                          }`}
+                        >
+                          {faq.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                          {faq.is_active ? 'Public' : 'Hidden'}
+                        </button>
+                      </td>
+                      <td className="px-8 py-5 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                          <button
+                            onClick={() => handleEdit(faq)}
+                            className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:border-black transition-all shadow-sm"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(faq.id)}
+                            className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-rose-500 hover:border-rose-100 hover:bg-rose-50 transition-all shadow-sm"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      </div>
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slide-up {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+        .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
+      `}</style>
     </AdminLayout>
   )
 }

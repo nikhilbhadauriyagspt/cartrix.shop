@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useWebsite } from '../../contexts/WebsiteContext'
-import { Edit2, Save, AlertCircle, CheckCircle, FileText, Plus, X } from 'lucide-react'
+import { Edit2, Save, AlertCircle, CheckCircle, FileText, Plus, X, ShieldCheck } from 'lucide-react'
 import AdminLayout from '../../components/AdminLayout'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
@@ -219,259 +219,234 @@ export default function AdminPolicies() {
 
   return (
     <AdminLayout>
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
+      <div className="animate-fade-in font-sans selection:bg-brand-orange selection:text-white pb-20">
+        
+        {/* Header */}
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Manage Policies</h1>
-            <p className="text-gray-600">Edit website policies and terms</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-100 text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-4 shadow-sm">
+              <ShieldCheck className="w-3 h-3" />
+              Legal & Compliance
+            </div>
+            <h2 className="text-4xl font-black text-gray-900 tracking-tight">
+              Store <span className="text-gray-400">Policies.</span>
+            </h2>
+            <p className="text-gray-500 font-medium mt-2">Manage your terms of service, privacy, and other legal documents.</p>
           </div>
+          
           {!editing && !creating && (
             <button
               onClick={handleCreate}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-8 py-4 bg-black text-white rounded-2xl hover:bg-brand-orange transition-all font-black text-[10px] uppercase tracking-widest shadow-xl transform hover:-translate-y-1"
             >
-              <Plus size={20} />
-              Add New Policy
+              <Plus className="w-4 h-4" />
+              Create Document
             </button>
           )}
         </div>
 
-      {message.text && (
-        <div className={`mb-6 p-4 rounded-2xl flex items-center gap-2 ${
-          message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-        }`}>
-          {message.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-          <span>{message.text}</span>
-        </div>
-      )}
-
-      {creating ? (
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">
-            Create New Policy
-          </h2>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Policy Type *
-              </label>
-              <select
-                value={newPolicy.policy_type}
-                onChange={(e) => setNewPolicy({ ...newPolicy, policy_type: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="privacy">Privacy Policy</option>
-                <option value="terms">Terms & Conditions</option>
-                <option value="refund">Refund Policy</option>
-                <option value="shipping">Shipping & Cancellation</option>
-              </select>
+        {/* Feedback Messages */}
+        {message.text && (
+          <div className={`mb-8 p-5 rounded-[2rem] border flex items-center gap-4 animate-slide-up shadow-sm ${
+            message.type === 'success' 
+              ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
+              : 'bg-rose-50 border-rose-100 text-rose-600'
+          }`}>
+            <div className={`w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm ${
+              message.type === 'success' ? 'text-emerald-500' : 'text-rose-500'
+            }`}>
+              {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
             </div>
-
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Title *
-              </label>
-              <input
-                type="text"
-                value={newPolicy.title}
-                onChange={(e) => setNewPolicy({ ...newPolicy, title: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., Privacy Policy"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                URL Slug *
-              </label>
-              <input
-                type="text"
-                value={newPolicy.slug}
-                onChange={(e) => setNewPolicy({ ...newPolicy, slug: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., privacy-policy"
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                URL will be: /policy/{newPolicy.slug}
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Content *
-              </label>
-              <div className="border border-gray-300 rounded-2xl overflow-hidden">
-                <ReactQuill
-                  theme="snow"
-                  value={newPolicy.content}
-                  onChange={(value) => setNewPolicy({ ...newPolicy, content: value })}
-                  modules={modules}
-                  formats={formats}
-                  className="bg-white"
-                  style={{ height: '400px', marginBottom: '42px' }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={newPolicy.is_active}
-                  onChange={(e) => setNewPolicy({ ...newPolicy, is_active: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-bold text-gray-700">Active</span>
-              </label>
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={handleCancelCreate}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 transition-colors"
-              >
-                <X size={20} />
-                Cancel
-              </button>
-              <button
-                onClick={handleCreatePolicy}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors"
-              >
-                <Save size={20} />
-                Create Policy
-              </button>
-            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest">{message.text}</span>
           </div>
-        </div>
-      ) : editing ? (
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">
-            Edit {getPolicyTypeName(editing.policy_type)}
-          </h2>
+        )}
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Title *
-              </label>
-              <input
-                type="text"
-                value={editing.title}
-                onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Content *
-              </label>
-              <div className="border border-gray-300 rounded-2xl overflow-hidden">
-                <ReactQuill
-                  theme="snow"
-                  value={editing.content}
-                  onChange={(value) => setEditing({ ...editing, content: value })}
-                  modules={modules}
-                  formats={formats}
-                  className="bg-white"
-                  style={{ height: '400px', marginBottom: '42px' }}
-                />
-              </div>
-              <p className="mt-2 text-sm text-gray-500">
-                Tip: You can paste HTML code directly. Use "class" (or "className" - it will be auto-converted) for Tailwind CSS styling.
-              </p>
-            </div>
-
-            <div>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={editing.is_active}
-                  onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-bold text-gray-700">Active</span>
-              </label>
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setEditing(null)}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 transition-colors"
-              >
-                <X size={20} />
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors"
-              >
-                <Save size={20} />
-                Save Policy
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="grid gap-6">
-          {policies.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-              <FileText size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Policies Yet</h3>
-              <p className="text-gray-600 mb-6">Create your first policy to get started</p>
-              <button
-                onClick={handleCreate}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors"
-              >
-                <Plus size={20} />
-                Create First Policy
-              </button>
-            </div>
-          ) : (
-            policies.map((policy) => (
-            <div key={policy.id} className="bg-white rounded-2xl shadow-md p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  {getPolicyIcon(policy.policy_type)}
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {policy.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-3">
-                      Slug: /{policy.slug}
-                    </p>
-                    <p className="text-sm text-gray-600 line-clamp-3">
-                      {policy.content.substring(0, 200)}...
-                    </p>
-                    <div className="mt-4">
-                      <button
-                        onClick={() => toggleStatus(policy)}
-                        className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          policy.is_active
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}
-                      >
-                        {policy.is_active ? 'Active' : 'Inactive'}
-                      </button>
-                    </div>
-                  </div>
+        {creating || editing ? (
+          <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-2xl shadow-gray-200/50 mb-12 animate-slide-up relative overflow-hidden">
+            <div className="flex justify-between items-center mb-10">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shadow-lg">
+                  {creating ? <Plus size={20} /> : <Edit2 size={20} />}
                 </div>
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+                  {creating ? 'Create Document' : `Update ${getPolicyTypeName(editing.policy_type)}`}
+                </h2>
+              </div>
+              <button onClick={creating ? handleCancelCreate : () => setEditing(null)} className="p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            <div className="space-y-8 relative z-10">
+              {creating && (
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Document Classification</label>
+                  <select
+                    value={newPolicy.policy_type}
+                    onChange={(e) => setNewPolicy({ ...newPolicy, policy_type: e.target.value })}
+                    className="w-full px-8 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-black text-[10px] uppercase tracking-widest appearance-none cursor-pointer"
+                  >
+                    <option value="privacy">Privacy Policy</option>
+                    <option value="terms">Terms & Conditions</option>
+                    <option value="refund">Refund Policy</option>
+                    <option value="shipping">Shipping & Cancellation</option>
+                  </select>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Official Title</label>
+                  <input
+                    type="text"
+                    value={creating ? newPolicy.title : editing.title}
+                    onChange={(e) => creating ? setNewPolicy({ ...newPolicy, title: e.target.value }) : setEditing({ ...editing, title: e.target.value })}
+                    className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
+                    placeholder="e.g. Privacy Protection Policy"
+                  />
+                </div>
+
+                {creating && (
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">SEO URL Slug</label>
+                    <input
+                      type="text"
+                      value={newPolicy.slug}
+                      onChange={(e) => setNewPolicy({ ...newPolicy, slug: e.target.value })}
+                      className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
+                      placeholder="e.g. privacy-policy"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Document Content</label>
+                <div className="border border-gray-100 rounded-[2.5rem] overflow-hidden bg-gray-50 shadow-inner">
+                  <ReactQuill
+                    theme="snow"
+                    value={creating ? newPolicy.content : editing.content}
+                    onChange={(value) => creating ? setNewPolicy({ ...newPolicy, content: value }) : setEditing({ ...editing, content: value })}
+                    modules={modules}
+                    formats={formats}
+                    className="bg-white"
+                    style={{ height: '400px', marginBottom: '42px' }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 px-2">
+                <input
+                  type="checkbox"
+                  id="active_status"
+                  checked={creating ? newPolicy.is_active : editing.is_active}
+                  onChange={(e) => creating ? setNewPolicy({ ...newPolicy, is_active: e.target.checked }) : setEditing({ ...editing, is_active: e.target.checked })}
+                  className="w-6 h-6 border-2 border-gray-100 rounded-lg text-brand-orange focus:ring-brand-orange/20 cursor-pointer accent-brand-orange"
+                />
+                <label htmlFor="active_status" className="text-xs font-black text-gray-900 uppercase tracking-widest cursor-pointer">
+                  Activate Document immediately
+                </label>
+              </div>
+
+              <div className="flex gap-4 pt-6 border-t border-gray-50">
                 <button
-                  onClick={() => handleEdit(policy)}
-                  className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-2xl transition-colors"
+                  onClick={creating ? handleCreatePolicy : handleSave}
+                  className="flex-1 py-5 bg-black text-white font-black rounded-2xl hover:bg-brand-orange transition-all duration-500 shadow-xl uppercase tracking-[0.2em] text-xs transform hover:-translate-y-1"
                 >
-                  <Edit2 size={18} />
-                  Edit
+                  <Save className="w-4 h-4 inline mr-2" />
+                  {creating ? 'Confirm & Create' : 'Save Document Changes'}
+                </button>
+                <button
+                  onClick={creating ? handleCancelCreate : () => setEditing(null)}
+                  className="px-10 py-5 bg-white text-gray-400 font-black rounded-2xl border border-gray-200 hover:text-black hover:border-black transition-all uppercase tracking-[0.2em] text-xs"
+                >
+                  Cancel
                 </button>
               </div>
             </div>
-          ))
-          )}
-        </div>
-      )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {policies.length === 0 ? (
+              <div className="md:col-span-2 bg-[#F9FAFB] rounded-[4rem] border border-dashed border-gray-200 py-32 text-center">
+                <FileText className="w-16 h-16 text-gray-200 mx-auto mb-6" />
+                <h3 className="text-2xl font-black text-gray-900 mb-2">No legal documents</h3>
+                <p className="text-gray-400 font-medium mb-10">You haven't created any store policies yet.</p>
+                <button
+                  onClick={handleCreate}
+                  className="px-10 py-5 bg-black text-white font-black rounded-2xl hover:bg-brand-orange transition-all shadow-xl uppercase tracking-widest text-xs"
+                >
+                  Add First Policy
+                </button>
+              </div>
+            ) : (
+              policies.map((policy) => (
+                <div key={policy.id} className="group bg-white rounded-[3rem] p-8 border border-gray-100 hover:border-brand-orange/20 shadow-sm hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-700 relative overflow-hidden flex flex-col">
+                  <div className="flex items-start justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-2xl bg-[#F9FAFB] group-hover:bg-brand-orange group-hover:text-white flex items-center justify-center text-gray-400 transition-all duration-500 shadow-inner">
+                        <FileText className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight group-hover:text-brand-orange transition-colors">{policy.title}</h3>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">/{policy.slug}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleEdit(policy)}
+                      className="p-3 bg-gray-50 rounded-xl text-gray-400 hover:text-black hover:bg-gray-100 transition-all"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="flex-1 space-y-4">
+                    <div className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 group-hover:bg-white transition-colors duration-500 min-h-[120px]">
+                      <p className="text-[11px] font-bold text-gray-500 line-clamp-4 leading-relaxed uppercase tracking-wider">
+                        {policy.content.replace(/<[^>]*>/g, '')}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-4">
+                      <button
+                        onClick={() => toggleStatus(policy)}
+                        className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-300 ${
+                          policy.is_active
+                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                            : 'bg-gray-50 text-gray-400 border-gray-100'
+                        }`}
+                      >
+                        {policy.is_active ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                        {policy.is_active ? 'Active Document' : 'Inactive / Draft'}
+                      </button>
+                      <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Modified: {new Date(policy.updated_at || policy.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+
+                  {/* Decorative blob */}
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-orange/5 rounded-full blur-2xl group-hover:bg-brand-orange/10 transition-colors pointer-events-none"></div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slide-up {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+        .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
+        .ql-container.ql-snow { border: none !important; font-family: inherit; }
+        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid #f3f4f6 !important; background: #fff; padding: 1rem !important; }
+        .ql-editor { padding: 2rem !important; min-height: 300px; font-size: 14px; color: #374151; }
+      `}</style>
     </AdminLayout>
   )
 }

@@ -25,7 +25,26 @@ export const AuthProvider = ({ children }) => {
         const sessionPromise = supabase.auth.getSession()
 
         const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise])
-        setUser(session?.user ?? null)
+        const currentUser = session?.user ?? null
+        setUser(currentUser)
+
+        // Handle pending website registration for Social Login
+        if (currentUser) {
+          const pendingWebsiteId = localStorage.getItem('pending_website_registration')
+          if (pendingWebsiteId) {
+            try {
+              await supabase
+                .from('user_website_registrations')
+                .upsert([{
+                  user_id: currentUser.id,
+                  website_id: pendingWebsiteId
+                }], { onConflict: 'user_id,website_id' })
+              localStorage.removeItem('pending_website_registration')
+            } catch (err) {
+              console.error('Error handling social login registration:', err)
+            }
+          }
+        }
       } catch (error) {
         console.error('Auth initialization error:', error)
         setUser(null)
@@ -36,10 +55,27 @@ export const AuthProvider = ({ children }) => {
 
     initAuth()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      (async () => {
-        setUser(session?.user ?? null)
-      })()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+
+      // Also check on auth state change (for some browser flows)
+      if (currentUser && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
+        const pendingWebsiteId = localStorage.getItem('pending_website_registration')
+        if (pendingWebsiteId) {
+          try {
+            await supabase
+              .from('user_website_registrations')
+              .upsert([{
+                user_id: currentUser.id,
+                website_id: pendingWebsiteId
+              }], { onConflict: 'user_id,website_id' })
+            localStorage.removeItem('pending_website_registration')
+          } catch (err) {
+            console.error('Error handling social login registration change:', err)
+          }
+        }
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -82,6 +118,21 @@ export const AuthProvider = ({ children }) => {
     return data
   }
 
+  const signInWithGoogle = async (websiteId = null) => {
+    if (websiteId) {
+      localStorage.setItem('pending_website_registration', websiteId)
+    }
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    })
+    if (error) throw error
+    return data
+  }
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
@@ -92,6 +143,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
   }
 

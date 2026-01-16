@@ -11,7 +11,8 @@ import {
   Users,
   MessageSquare,
   TrendingUp,
-  Clock
+  Clock,
+  ArrowRight
 } from 'lucide-react'
 
 export default function AdminDashboard() {
@@ -25,6 +26,7 @@ export default function AdminDashboard() {
     inquiries: 0,
   })
   const [recentOrders, setRecentOrders] = useState([])
+  const [recentUsers, setRecentUsers] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -34,6 +36,8 @@ export default function AdminDashboard() {
   }, [websiteId])
 
   const fetchDashboardData = async () => {
+    if (!websiteId || websiteId === 'undefined') return;
+    
     try {
       const [
         productsRes,
@@ -41,19 +45,21 @@ export default function AdminDashboard() {
         ordersRes,
         usersRes,
         inquiriesRes,
-        recentOrdersRes
+        recentOrdersRes,
+        recentUsersRes
       ] = await Promise.all([
         supabase.from('products').select('*', { count: 'exact', head: true }),
         supabase.from('blogs').select('*', { count: 'exact', head: true }),
         supabase.from('orders').select('total_amount').eq('website_id', websiteId),
-        supabase.rpc('admin_get_users_by_website', { target_website_id: websiteId }),
+        supabase.from('user_website_registrations').select('*', { count: 'exact', head: true }).eq('website_id', websiteId),
         supabase.rpc('admin_get_contact_submissions', { target_website_id: websiteId }),
         supabase
           .from('orders')
           .select('id, total_amount, status, created_at')
           .eq('website_id', websiteId)
           .order('created_at', { ascending: false })
-          .limit(5)
+          .limit(5),
+        supabase.rpc('admin_get_users_by_website', { target_website_id: websiteId })
       ])
 
       const revenue = ordersRes.data?.reduce((sum, order) => sum + parseFloat(order.total_amount), 0) || 0
@@ -63,11 +69,12 @@ export default function AdminDashboard() {
         blogs: blogsRes.count || 0,
         orders: ordersRes.data?.length || 0,
         revenue: revenue,
-        users: usersRes.data?.length || 0,
+        users: usersRes.count || 0,
         inquiries: inquiriesRes.data?.length || 0,
       })
 
       setRecentOrders(recentOrdersRes.data || [])
+      setRecentUsers(recentUsersRes.data?.slice(0, 5) || [])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {
@@ -98,179 +105,166 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div>
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900">Dashboard Overview</h2>
-          <p className="text-slate-600 mt-1">Welcome back! Here's what's happening with your store.</p>
+      <div className="animate-fade-in font-sans selection:bg-brand-orange selection:text-white pb-20">
+        
+        {/* Header */}
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-100 text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-4 shadow-sm">
+            <TrendingUp className="w-3 h-3" />
+            Performance Overview
+          </div>
+          <h2 className="text-4xl font-black text-gray-900 tracking-tight">
+            Dashboard <span className="text-gray-400">Hub.</span>
+          </h2>
+          <p className="text-gray-500 font-medium mt-2">Everything you need to manage your business effectively.</p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-primary-600 to-primary-500 rounded-3xl shadow-lg p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-primary-100 text-sm font-bold">Total Products</p>
-                <p className="text-4xl font-bold mt-2">{stats.products}</p>
-              </div>
-              <div className="w-14 h-14 bg-white/20 rounded-3xl flex items-center justify-center">
-                <Package className="w-7 h-7" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl shadow-lg p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-emerald-100 text-sm font-bold">Total Orders</p>
-                <p className="text-4xl font-bold mt-2">{stats.orders}</p>
-              </div>
-              <div className="w-14 h-14 bg-white/20 rounded-3xl flex items-center justify-center">
-                <ShoppingCart className="w-7 h-7" />
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+          {/* Main Stat: Revenue */}
+          <div className="bg-black rounded-[3rem] p-10 text-white relative overflow-hidden group">
+            <div className="relative z-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Total Revenue</p>
+              <h3 className="text-5xl font-black tracking-tighter mb-8">${stats.revenue.toLocaleString()}</h3>
+              <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-widest">
+                <TrendingUp className="w-4 h-4" /> +12.5% Growth
               </div>
             </div>
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/20 rounded-full blur-3xl group-hover:bg-brand-orange/30 transition-colors"></div>
+            <DollarSign className="absolute bottom-10 right-10 w-24 h-24 text-white/5" />
           </div>
 
-          <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-3xl shadow-lg p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-amber-100 text-sm font-bold">Total Revenue</p>
-                <p className="text-4xl font-bold mt-2">${stats.revenue.toFixed(0)}</p>
-              </div>
-              <div className="w-14 h-14 bg-white/20 rounded-3xl flex items-center justify-center">
-                <DollarSign className="w-7 h-7" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-md p-6 border-2 border-slate-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-600 text-sm font-bold">Registered Users</p>
-                <p className="text-3xl font-bold text-slate-900 mt-2">{stats.users}</p>
-              </div>
-              <div className="w-12 h-12 bg-slate-100 rounded-3xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-slate-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-md p-6 border-2 border-slate-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-600 text-sm font-bold">Customer Inquiries</p>
-                <p className="text-3xl font-bold text-slate-900 mt-2">{stats.inquiries}</p>
-              </div>
-              <div className="w-12 h-12 bg-slate-100 rounded-3xl flex items-center justify-center">
-                <MessageSquare className="w-6 h-6 text-slate-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-md p-6 border-2 border-slate-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-600 text-sm font-bold">Blog Posts</p>
-                <p className="text-3xl font-bold text-slate-900 mt-2">{stats.blogs}</p>
-              </div>
-              <div className="w-12 h-12 bg-slate-100 rounded-3xl flex items-center justify-center">
-                <FileText className="w-6 h-6 text-slate-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-3xl shadow-md p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-slate-900">Recent Orders</h3>
-              <Link
-                to="/admin/orders"
-                className="text-sm text-primary-600 hover:text-primary-700 font-bold"
-              >
-                View All
+          {/* Orders Stat */}
+          <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-700 relative overflow-hidden group">
+            <div className="relative z-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Active Orders</p>
+              <h3 className="text-5xl font-black tracking-tighter mb-8 text-gray-900">{stats.orders}</h3>
+              <Link to="/admin/orders" className="inline-flex items-center gap-2 text-brand-orange text-[10px] font-black uppercase tracking-[0.2em] hover:text-black transition-colors">
+                Manage Orders <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
-            {recentOrders.length === 0 ? (
-              <div className="text-center py-8 text-slate-500">
-                <ShoppingCart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>No orders yet</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {recentOrders.map((order) => (
-                  <div
-                    key={order.id}
-                    className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <Clock className="w-4 h-4 text-slate-400" />
-                        <span className="text-sm text-slate-600">
-                          {new Date(order.created_at).toLocaleDateString()}
-                        </span>
+            <ShoppingCart className="absolute bottom-10 right-10 w-24 h-24 text-gray-50 group-hover:text-brand-orange/5 transition-colors" />
+          </div>
+
+          {/* Users Stat */}
+          <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-700 relative overflow-hidden group">
+            <div className="relative z-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Total Customers</p>
+              <h3 className="text-5xl font-black tracking-tighter mb-8 text-gray-900">{stats.users}</h3>
+              <Link to="/admin/users" className="inline-flex items-center gap-2 text-brand-orange text-[10px] font-black uppercase tracking-[0.2em] hover:text-black transition-colors">
+                View All Users <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+            <Users className="absolute bottom-10 right-10 w-24 h-24 text-gray-50 group-hover:text-brand-orange/5 transition-colors" />
+          </div>
+        </div>
+
+        {/* Tables Section */}
+        <div className="grid lg:grid-cols-2 gap-10">
+          
+          {/* Recent Orders */}
+          <div className="bg-white rounded-[3.5rem] p-8 md:p-12 border border-gray-100 shadow-sm transition-all hover:shadow-xl hover:shadow-gray-200/50">
+            <div className="flex items-center justify-between mb-10">
+              <h3 className="text-2xl font-black text-gray-900 tracking-tight">Recent Orders</h3>
+              <Link to="/admin/orders" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-brand-orange transition-colors">View All</Link>
+            </div>
+            
+            <div className="space-y-4">
+              {recentOrders.length === 0 ? (
+                <div className="py-12 text-center bg-gray-50 rounded-[2rem] border border-dashed border-gray-200">
+                  <p className="text-gray-400 font-medium">No recent orders found</p>
+                </div>
+              ) : (
+                recentOrders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between p-5 bg-[#F9FAFB] rounded-[2rem] hover:bg-white border border-transparent hover:border-gray-100 transition-all duration-300">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-brand-orange shadow-sm">
+                        <Package className="w-5 h-5" />
                       </div>
-                      <p className="font-mono text-xs text-slate-500 mt-1">
-                        #{order.id.slice(0, 8)}
-                      </p>
+                      <div>
+                        <p className="text-[10px] font-black text-gray-900 uppercase tracking-tight">Order #{order.id.slice(0, 8).toUpperCase()}</p>
+                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">{new Date(order.created_at).toLocaleDateString()}</p>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-slate-900">
-                        ${parseFloat(order.total_amount).toFixed(2)}
-                      </p>
-                      <span className={`inline-block px-2 py-1 rounded text-xs font-bold mt-1 ${getStatusColor(order.status)}`}>
+                      <p className="font-black text-gray-900">${parseFloat(order.total_amount).toFixed(2)}</p>
+                      <span className={`inline-block px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest mt-1 border ${getStatusColor(order.status)}`}>
                         {order.status}
                       </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-md p-6">
-            <h3 className="text-xl font-bold text-slate-900 mb-6">Quick Actions</h3>
-            <div className="grid gap-4">
-              <Link
-                to="/admin/products"
-                className="flex items-center gap-4 p-4 bg-gradient-to-r from-primary-50 to-accent-50 rounded-2xl hover:from-sky-100 hover:to-cyan-100 transition-colors group"
-              >
-                <div className="w-12 h-12 bg-gradient-to-r from-primary-600 to-primary-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Package className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-900">Manage Products</h4>
-                  <p className="text-sm text-slate-600">Add, edit, or remove products</p>
-                </div>
-              </Link>
-
-              <Link
-                to="/admin/orders"
-                className="flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl hover:from-emerald-100 hover:to-green-100 transition-colors group"
-              >
-                <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <ShoppingCart className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-900">Manage Orders</h4>
-                  <p className="text-sm text-slate-600">View and update order status</p>
-                </div>
-              </Link>
-
-              <Link
-                to="/admin/blogs"
-                className="flex items-center gap-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl hover:from-amber-100 hover:to-orange-100 transition-colors group"
-              >
-                <div className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <FileText className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-900">Manage Blogs</h4>
-                  <p className="text-sm text-slate-600">Create and publish blog posts</p>
-                </div>
-              </Link>
+                ))
+              )}
             </div>
           </div>
+
+          {/* Recent Customers */}
+          <div className="bg-white rounded-[3.5rem] p-8 md:p-12 border border-gray-100 shadow-sm transition-all hover:shadow-xl hover:shadow-gray-200/50">
+            <div className="flex items-center justify-between mb-10">
+              <h3 className="text-2xl font-black text-gray-900 tracking-tight">New Customers</h3>
+              <Link to="/admin/users" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-brand-orange transition-colors">View All</Link>
+            </div>
+            
+            <div className="space-y-4">
+              {recentUsers.length === 0 ? (
+                <div className="py-12 text-center bg-gray-50 rounded-[2rem] border border-dashed border-gray-200">
+                  <p className="text-gray-400 font-medium">No recent customers found</p>
+                </div>
+              ) : (
+                recentUsers.map((user) => (
+                  <div key={user.id} className="flex items-center justify-between p-5 bg-[#F9FAFB] rounded-[2rem] hover:bg-white border border-transparent hover:border-gray-100 transition-all duration-300">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 shadow-sm font-black text-sm">
+                        {user.email.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-black text-gray-900 uppercase tracking-tight truncate">{user.email.split('@')[0]}</p>
+                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1 truncate">{user.email}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[9px] font-black text-gray-900 uppercase tracking-widest">Joined</p>
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">{new Date(user.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
         </div>
+
+        {/* Secondary Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+          {[
+            { label: 'Products', count: stats.products, icon: Package, link: '/admin/products' },
+            { label: 'Blog Posts', count: stats.blogs, icon: FileText, link: '/admin/blogs' },
+            { label: 'Inquiries', count: stats.inquiries, icon: MessageSquare, link: '/admin/inquiries' },
+          ].map((item, i) => (
+            <Link key={i} to={item.link} className="bg-white rounded-[2.5rem] p-8 border border-gray-100 flex items-center justify-between hover:shadow-xl transition-all duration-500 group">
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand-orange/5 group-hover:text-brand-orange transition-all">
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-gray-900 tracking-tighter">{item.count}</p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.label}</p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-gray-200 group-hover:text-brand-orange transition-all" />
+            </Link>
+          ))}
+        </div>
+
       </div>
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+      `}</style>
     </AdminLayout>
   )
 }

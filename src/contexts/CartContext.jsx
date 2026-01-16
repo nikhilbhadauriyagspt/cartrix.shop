@@ -26,6 +26,7 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(false)
   const [sessionId] = useState(getSessionId())
+  const [isCartOpen, setIsCartOpen] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -266,6 +267,8 @@ export const CartProvider = ({ children }) => {
     getCartCount,
     fetchCart,
     sessionId,
+    isCartOpen,
+    setIsCartOpen,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

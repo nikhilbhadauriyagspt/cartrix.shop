@@ -1,49 +1,53 @@
 import { useState, useEffect, useRef } from 'react'
-import { Search, X, ArrowRight, Loader2, PackageSearch } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Search, X, Loader2, TrendingUp, ArrowRight, Tag } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { FreeMode, Grid, Mousewheel } from 'swiper/modules'
+import { formatImageUrl } from '../utils/formatUrl'
 
-// Import Swiper styles
-import 'swiper/css'
-import 'swiper/css/free-mode'
-import 'swiper/css/grid'
-
-export default function SearchBar({ placeholder = "Search...", className = "" }) {
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false)
+export default function SearchBar({ placeholder = "Search for printers, ink...", className = "" }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
-  const [hasSearched, setHasSearched] = useState(false)
-  const inputRef = useRef(null)
+  const [isOpen, setIsOpen] = useState(false)
+  const [categories, setCategories] = useState([])
+  const containerRef = useRef(null)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const handleOpenEvent = () => setIsOverlayOpen(true)
-    window.addEventListener('openSearch', handleOpenEvent)
-    
-    if (isOverlayOpen && inputRef.current) {
-      inputRef.current.focus()
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('name, slug')
+        .limit(8)
+      if (data) setCategories(data)
+    } catch (err) {
+      console.error('Error fetching categories:', err)
     }
-    return () => {
-      window.removeEventListener('openSearch', handleOpenEvent)
-      document.body.style.overflow = 'unset'
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false)
+      }
     }
-  }, [isOverlayOpen])
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   useEffect(() => {
     const searchTimeout = setTimeout(() => {
-      if (query.length >= 1) {
+      if (query.trim().length >= 2) {
         performSearch()
       } else {
         setResults([])
-        setHasSearched(false)
+        setLoading(false)
       }
-    }, 400)
+    }, 300)
 
     return () => clearTimeout(searchTimeout)
   }, [query])
@@ -55,10 +59,10 @@ export default function SearchBar({ placeholder = "Search...", className = "" })
         .from('products')
         .select('id, name, price, image_url, category_id')
         .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+        .limit(6)
 
       if (error) throw error
       setResults(data || [])
-      setHasSearched(true)
     } catch (error) {
       console.error('Search error:', error)
     } finally {
@@ -66,166 +70,172 @@ export default function SearchBar({ placeholder = "Search...", className = "" })
     }
   }
 
-  const handleClose = () => {
-    setIsOverlayOpen(false)
-    setQuery('')
-    setResults([])
-    setHasSearched(false)
-  }
-
-  const handleSearchNavigation = (e) => {
-    if (e.key === 'Enter' && query.length >= 1) {
+  const handleSearchSubmit = (e) => {
+    e?.preventDefault()
+    if (query.trim()) {
       navigate(`/shop?search=${encodeURIComponent(query)}`)
-      handleClose()
+      setIsOpen(false)
     }
   }
 
+  const handleProductClick = (productId) => {
+    navigate(`/shop/${productId}`)
+    setIsOpen(false)
+    setQuery('')
+  }
+
+  const handleTagClick = (tag) => {
+    if (tag.slug) {
+      navigate(`/shop/category/${tag.slug}`)
+    } else if (tag.query) {
+      navigate(`/shop?search=${encodeURIComponent(tag.query)}`)
+    }
+    setIsOpen(false)
+  }
+
   return (
-    <>
-      {/* Header Trigger */}
-      <div
-        onClick={() => setIsOverlayOpen(true)}
-        className={`relative cursor-pointer group ${className}`}
+    <div ref={containerRef} className={`relative z-50 ${className}`}>
+      
+      {/* Input Container */}
+      <form 
+        onSubmit={handleSearchSubmit} 
+        className={`
+          relative flex items-center bg-gray-100/80 border-2 transition-all duration-300 rounded-full
+          ${isOpen ? 'bg-white border-brand-orange shadow-lg ring-4 ring-brand-orange/10' : 'border-transparent hover:bg-gray-100 hover:border-gray-200'}
+        `}
       >
-        <div className="flex items-center w-full h-12 px-6 bg-[#F9FAFB] rounded-full border border-gray-200 hover:border-brand-orange/50 hover:bg-white transition-all duration-300 group-hover:shadow-sm">
-          <Search className="w-5 h-5 text-gray-400 group-hover:text-brand-orange transition-colors mr-3" />
-          <span className="text-sm text-gray-500 font-medium truncate select-none group-hover:text-gray-900">
-            {placeholder}
-          </span>
-        </div>
-      </div>
+        <Search className={`ml-4 w-5 h-5 transition-colors ${isOpen ? 'text-brand-orange' : 'text-gray-400'}`} />
+        
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            setIsOpen(true)
+          }}
+          onFocus={() => setIsOpen(true)}
+          placeholder={placeholder}
+          className="flex-1 w-full h-12 px-3 bg-transparent text-gray-900 text-sm font-medium placeholder:text-gray-500 focus:outline-none"
+        />
 
-      {/* Full Screen Overlay */}
-      {isOverlayOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-2xl animate-in fade-in duration-300 flex flex-col pt-12">
-          
-          {/* Close Button */}
+        {query && (
           <button
-            onClick={handleClose}
-            className="absolute top-8 right-8 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all z-50 hover:rotate-90 duration-300"
+            type="button"
+            onClick={() => {
+              setQuery('')
+              setResults([])
+              if (!isOpen) setIsOpen(false)
+            }}
+            className="p-1 mr-2 hover:bg-gray-200 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <X className="w-8 h-8" />
+            <X className="w-4 h-4" />
           </button>
+        )}
 
-          {/* Search Input Area */}
-          <div className="w-full max-w-5xl mx-auto mb-16 px-6 text-center">
-            <div className="relative border-b-2 border-white/10 focus-within:border-brand-orange transition-colors duration-500 pb-4">
-              <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 text-white/30" />
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={handleSearchNavigation}
-                placeholder="What are you looking for?"
-                className="w-full pl-14 pr-4 py-2 bg-transparent text-4xl md:text-6xl font-black text-white placeholder-white/10 outline-none tracking-tighter text-left"
-              />
+        <button 
+          type="submit"
+          className="m-1 px-6 h-10 bg-gray-900 text-white text-sm font-bold rounded-full hover:bg-brand-orange transition-all duration-300 shadow-sm hover:shadow-md hidden sm:block"
+        >
+          Search
+        </button>
+      </form>
+
+      {/* Dropdown Panel */}
+      {isOpen && (
+        <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          
+          {loading ? (
+            <div className="p-8 flex flex-col items-center justify-center text-gray-400 space-y-3">
+              <Loader2 className="w-8 h-8 animate-spin text-brand-orange" />
+              <span className="text-sm font-medium animate-pulse">Searching catalog...</span>
             </div>
-          </div>
-
-          {/* Results Area */}
-          <div className="flex-1 w-full max-w-[1800px] mx-auto overflow-hidden flex flex-col px-6">
-            {loading ? (
-              <div className="flex flex-col items-center justify-center h-full opacity-50">
-                <Loader2 className="w-12 h-12 animate-spin text-brand-orange mb-4" />
-                <p className="text-white font-bold uppercase tracking-widest text-xs">Accessing Database...</p>
+          ) : query.length < 2 ? (
+            // Empty State / Popular Tags
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold text-sm uppercase tracking-wider">
+                <TrendingUp className="w-4 h-4 text-brand-orange" />
+                Popular Categories
               </div>
-            ) : hasSearched && results.length > 0 ? (
-              <div className="flex-1 flex flex-col min-h-0 animate-in slide-in-from-bottom-8 duration-700">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/40">
-                    Matches Found ({results.length})
-                  </h3>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat, idx) => (
                   <button
-                    onClick={() => {
-                      navigate(`/shop?search=${encodeURIComponent(query)}`)
-                      handleClose()
-                    }}
-                    className="group text-sm font-black text-brand-orange hover:text-white transition-colors flex items-center gap-2"
+                    key={idx}
+                    onClick={() => handleTagClick(cat)}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-brand-orange hover:text-white rounded-full text-sm font-medium text-gray-600 transition-all border border-gray-100 hover:border-brand-orange group"
                   >
-                    EXPLORE ALL <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <Tag className="w-3.5 h-3.5 text-gray-400 group-hover:text-white" />
+                    {cat.name}
                   </button>
-                </div>
-
-                {/* 2-Row Swiper Slider */}
-                <div className="flex-1 min-h-0 -mx-4 px-4 overflow-visible">
-                  <Swiper
-                    modules={[FreeMode, Grid, Mousewheel]}
-                    slidesPerView={1.5}
-                    grid={{
-                      rows: results.length > 4 ? 2 : 1,
-                      fill: 'row'
-                    }}
-                    spaceBetween={20}
-                    freeMode={true}
-                    mousewheel={{ forceToAxis: true }}
-                    breakpoints={{
-                      640: { slidesPerView: 2.5 },
-                      1024: { slidesPerView: 4.5 },
-                      1440: { slidesPerView: 5.5 },
-                    }}
-                    className="h-full w-full search-results-swiper"
+                ))}
+              </div>
+            </div>
+          ) : results.length > 0 ? (
+            // Results List
+            <div>
+              <div className="px-5 py-3 bg-gray-50/50 border-b border-gray-100 flex justify-between items-center">
+                <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Products</span>
+                <span className="text-xs font-bold text-brand-orange">{results.length} matches</span>
+              </div>
+              
+              <div className="max-h-[60vh] overflow-y-auto">
+                {results.map((product) => (
+                  <div
+                    key={product.id}
+                    onClick={() => handleProductClick(product.id)}
+                    className="group px-5 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0 flex items-center gap-4"
                   >
-                    {results.map((product) => (
-                      <SwiperSlide key={product.id} className="h-auto">
-                        <Link
-                          to={`/shop/${product.id}`}
-                          onClick={handleClose}
-                          className="group bg-white rounded-[2rem] p-4 hover:bg-brand-orange transition-all duration-500 shadow-2xl h-full flex flex-col"
-                        >
-                          <div className="aspect-square bg-gray-50 rounded-3xl mb-4 p-4 overflow-hidden relative flex items-center justify-center">
-                            <img
-                              src={product.image_url}
-                              alt={product.name}
-                              className="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-110"
-                            />
-                          </div>
-                          <div className="mt-auto">
-                            <h4 className="font-bold text-gray-900 group-hover:text-white text-sm line-clamp-1 mb-1 transition-colors">
-                              {product.name}
-                            </h4>
-                            <p className="font-black text-brand-orange group-hover:text-white text-lg transition-colors">
-                              ${parseFloat(product.price).toFixed(0)}
-                            </p>
-                          </div>
-                        </Link>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </div>
+                    <div className="w-14 h-14 bg-white border border-gray-100 rounded-lg p-1.5 flex-shrink-0 group-hover:border-brand-orange/30 transition-colors">
+                      <img
+                        src={formatImageUrl(product.image_url)}
+                        alt={product.name}
+                        className="w-full h-full object-contain mix-blend-multiply"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-gray-900 group-hover:text-brand-orange truncate transition-colors">
+                        {product.name}
+                      </h4>
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-1 opacity-70">
+                        Top quality printing accessory
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="block font-black text-brand-orange text-sm">
+                        ${parseFloat(product.price).toFixed(2)}
+                      </span>
+                      <span className="text-[10px] text-gray-400 font-medium line-through decoration-brand-orange/50">
+                        ${(parseFloat(product.price) * 1.2).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ) : hasSearched && results.length === 0 ? (
-              <div className="text-center mt-20 bg-white/5 py-20 rounded-[3rem] border border-white/5 max-w-2xl mx-auto">
-                <PackageSearch className="w-16 h-16 text-white/20 mx-auto mb-6" />
-                <h3 className="text-2xl font-black text-white mb-2">No Matches Found</h3>
-                <p className="text-white/40 font-medium">Try searching for something else like "Ink" or "Laser Printer"</p>
+
+              {/* View All Footer */}
+              <div 
+                onClick={handleSearchSubmit}
+                className="p-3 bg-gray-50 border-t border-gray-100 hover:bg-gray-100 cursor-pointer transition-colors text-center group"
+              >
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-gray-900 group-hover:text-brand-orange">
+                  View all results for "{query}" 
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
               </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center opacity-10">
-                <span className="text-[15vw] font-black text-white tracking-tighter select-none pointer-events-none">EXPLORE</span>
+            </div>
+          ) : (
+            // No Results
+            <div className="p-10 text-center">
+              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-gray-300" />
               </div>
-            )}
-          </div>
+              <h3 className="text-gray-900 font-bold mb-1">No matches found</h3>
+              <p className="text-sm text-gray-500">
+                We couldn't find anything for "{query}". <br/>Try checking for typos or use different keywords.
+              </p>
+            </div>
+          )}
         </div>
       )}
-
-      <style jsx global>{`
-        .search-results-swiper {
-          padding-bottom: 40px !important;
-        }
-        .search-results-swiper .swiper-wrapper {
-          flex-direction: row !important;
-        }
-        .search-results-swiper .swiper-slide {
-          height: calc((100% - 20px) / 2) !important;
-          margin-top: 0 !important;
-        }
-        @media (max-width: 640px) {
-          .search-results-swiper .swiper-slide {
-            height: auto !important;
-          }
-        }
-      `}</style>
-    </>
+    </div>
   )
 }

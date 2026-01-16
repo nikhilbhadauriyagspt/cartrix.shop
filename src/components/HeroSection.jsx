@@ -1,43 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowRight, Search, ShieldCheck } from 'lucide-react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
+import React, { useEffect, useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatImageUrl } from '../utils/formatUrl';
 import { Link } from 'react-router-dom';
-import { useSiteSettings } from '../contexts/SiteSettingsContext';
-
-// Import Swiper styles
-import 'swiper/css';
 
 const HeroSection = () => {
-  const { settings } = useSiteSettings();
-  const [rightProducts, setRightProducts] = useState([]);
-  const [middleProducts, setMiddleProducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const autoRotateRef = useRef(null);
 
   useEffect(() => {
     fetchHeroProducts();
   }, []);
 
+  useEffect(() => {
+    if (loading || products.length === 0) return;
+    startAutoRotate();
+    return () => stopAutoRotate();
+  }, [activeIndex, loading, products.length]);
+
+  const startAutoRotate = () => {
+    stopAutoRotate();
+    autoRotateRef.current = setInterval(() => {
+      handleNext();
+    }, 5000);
+  };
+
+  const stopAutoRotate = () => {
+    if (autoRotateRef.current) clearInterval(autoRotateRef.current);
+  };
+
   const fetchHeroProducts = async () => {
     try {
-      const { data: rightData, error: rightError } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(8);
-
-      const { data: middleData, error: middleError } = await supabase
+      const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('price', { ascending: false })
-        .limit(8);
+        .limit(10);
 
-      if (rightError) throw rightError;
-      if (middleError) throw middleError;
-
-      setRightProducts(rightData || []);
-      setMiddleProducts(middleData || []);
+      if (error) throw error;
+      setProducts(data || []);
+      setActiveIndex(Math.floor((data?.length || 0) / 2));
     } catch (error) {
       console.error('Error fetching hero products:', error);
     } finally {
@@ -45,230 +49,164 @@ const HeroSection = () => {
     }
   };
 
-  const openSearch = () => {
-    window.dispatchEvent(new Event('openSearch'));
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev + 1) % products.length);
+  };
+
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev - 1 + products.length) % products.length);
+  };
+
+  const getSlideStyles = (index) => {
+    const total = products.length;
+    let diff = (index - activeIndex + total + total / 2) % total - total / 2;
+
+    // Normalize diff
+    if (diff < -Math.floor(total / 2)) diff += total;
+    if (diff > Math.floor(total / 2)) diff -= total;
+
+    const isCenter = diff === 0;
+    const isLeft = diff === -1;
+    const isRight = diff === 1;
+
+    let zIndex = 0;
+    let opacity = 0;
+    let transform = 'translateX(0) scale(0.5)';
+    let pointerEvents = 'none';
+
+    if (isCenter) {
+      zIndex = 30;
+      opacity = 1;
+      transform = 'translateX(0) scale(1)';
+      pointerEvents = 'auto';
+    } else if (isLeft) {
+      zIndex = 20;
+      opacity = 1;
+      // Increased offset to 150%
+      transform = 'translateX(-150%) scale(1)';
+    } else if (isRight) {
+      zIndex = 20;
+      opacity = 1;
+      // Increased offset to 150%
+      transform = 'translateX(150%) scale(1)';
+    } else {
+      opacity = 0;
+      zIndex = 10;
+      if (diff < 0) transform = 'translateX(-150%) scale(0.5)';
+      else transform = 'translateX(150%) scale(0.5)';
+    }
+
+    return { zIndex, opacity, transform, pointerEvents, isCenter };
   };
 
   return (
-    <section className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 my-5 bg-gray-50/50">
-      {/* Main Container - Rounded Corners & Soft Background */}
-      <div className="bg-[#F2F7F6] rounded-[2rem] p-6 md:p-10 lg:p-12 w-full shadow-sm border border-[#e8f1f0]">
+    <section className="relative w-full bg-white overflow-hidden py-10 lg:py-16 font-sans selection:bg-gray-900 selection:text-white">
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-          {/* ================= LEFT COLUMN (Text Content) - NOW LARGER (Span 6) ================= */}
-          <div className="lg:col-span-6 flex flex-col justify-center space-y-8 lg:pr-12">
-            <div>
-              {/* Sub-heading with Icon */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-200  backdrop-blur-sm mb-6">
-                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-brand-orange" />
-                <span className="text-[10px] sm:text-sm font-bold text-brand-orange uppercase tracking-[0.2em]">
-                  Official Distributor
-                </span>
-              </div>
-
-              <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-gray-900 !leading-[1.1] tracking-tight">
-                Premium Printing <br />
-                <span className="text-brand-orange">For Your Business</span>
-              </h1>
-
-              <p className="mt-8 text-xl text-gray-500 leading-relaxed max-w-lg font-medium">
-                Experience the best in print technology with <strong>{settings.brand_name || 'Printer Pro'}</strong>.
-                Reliable printers, quality ink, and expert support.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
-              <Link to="/shop" className="bg-brand-orange hover:bg-[#093642] text-white px-10 py-5 rounded-full font-bold transition-all duration-300 shadow-xl shadow-teal-900/20 transform hover:-translate-y-1 text-center whitespace-nowrap text-lg">
-                Shop Now
-              </Link>
-
-              {/* Search Trigger Button */}
-              <button
-                onClick={openSearch}
-                className="flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 px-10 py-5 rounded-full font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-1 group whitespace-nowrap text-lg"
-              >
-                <Search className="w-6 h-6 text-gray-400 group-hover:text-brand-orange transition-colors" />
-                <span>Search Products</span>
-              </button>
-            </div>
-
-            {/* Expert Contact Pill */}
-            <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md p-2 pr-6 rounded-full w-fit mt-4 border border-white shadow-sm">
-              <div className="flex -space-x-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-gray-200 overflow-hidden relative">
-                    <img
-                      src={`https://i.pravatar.cc/100?img=${i + 15}`}
-                      alt="Expert"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-bold text-gray-900">Talk to an expert</span>
-                <span className="text-xs text-gray-500 font-medium">Available 24/7</span>
-              </div>
-            </div>
-          </div>
-
-          {/* ================= MIDDLE COLUMN (Dynamic Slider 1) ================= */}
-          <div className="lg:col-span-3 relative group hidden md:block">
-            <div className="h-[320px] lg:h-[610px] w-full bg-white rounded-4xl overflow-hidden relative shadow-md transition-all duration-700 border border-gray-100">
-
-              {loading ? (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-100 border-t-brand-orange"></div>
-                </div>
-              ) : (
-                <Swiper
-                  modules={[Autoplay]}
-                  spaceBetween={0}
-                  slidesPerView={1}
-                  speed={1200}
-                  autoplay={{
-                    delay: 4500,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: false,
-                  }}
-                  loop={middleProducts.length > 1}
-                  className="h-full w-full"
-                >
-                  {middleProducts.map((product) => (
-                    <SwiperSlide key={product.id} className="h-full w-full bg-white">
-                      <Link to={`/shop/${product.id}`} className="relative block w-full h-full">
-
-                        <div className="absolute inset-0 bg-gray-50 flex items-center justify-center overflow-hidden">
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="w-full h-full object-contain transition-transform duration-[2000ms] hover:scale-110"
-                          />
-                        </div>
-
-                        {/* Product Badge */}
-                        <div className="absolute top-5 left-5 right-5 z-10">
-                          <div className="bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl border border-gray-100">
-                            <p className="text-[9px] text-brand-orange font-black uppercase tracking-widest mb-1">
-                              Premium Choice
-                            </p>
-                            <p className="text-sm font-black text-gray-900 truncate">
-                              {product.name}
-                            </p>
-                            <p className="text-xs font-bold text-gray-500">
-                              ${parseFloat(product.price).toFixed(0)}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Arrow */}
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-2xl text-gray-900 transition-all duration-500 hover:bg-brand-orange hover:text-white group-hover:scale-110">
-                          <ArrowRight className="w-6 h-6" />
-                        </div>
-
-                      </Link>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              )}
-            </div>
-          </div>
-
-          {/* ================= RIGHT COLUMN (Dynamic Slider 2) ================= */}
-          <div className="lg:col-span-3 flex flex-col gap-5 ">
-
-            {/* Top Product Card */}
-            <div className=" min-h-[180px] bg-white rounded-4xl relative overflow-hidden group shadow-md border border-gray-100">
-
-              {loading ? (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-100 border-t-brand-orange"></div>
-                </div>
-              ) : (
-                <Swiper
-                  modules={[Autoplay]}
-                  spaceBetween={0}
-                  slidesPerView={1}
-                  speed={1000}
-                  autoplay={{
-                    delay: 2800,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: false,
-                  }}
-                  loop={rightProducts.length > 1}
-                  className="h-full w-full"
-                >
-                  {rightProducts.map((product) => (
-                    <SwiperSlide key={product.id} className="h-full w-full bg-white">
-                      <Link to={`/shop/${product.id}`} className="relative block w-full h-full">
-
-                        <div className="w-full h-full overflow-hidden pt-6">
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="w-full h-full object-contain transition-transform duration-[2000ms] ease-out hover:scale-110"
-                          />
-                        </div>
-
-                        {/* Badge */}
-                        <div className="absolute top-3 left-5 right-5 z-10">
-                          <div className="bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl border border-gray-100 transition-transform duration-500 hover:-translate-y-1">
-                            <p className="text-[9px] uppercase font-black tracking-[0.2em] text-brand-orange mb-1">
-                              New Arrival
-                            </p>
-                            <p className="text-sm font-black text-gray-900 truncate">
-                              {product.name}
-                            </p>
-                            <p className="text-brand-orange absolute right-4 top-2 font-black text-sm">
-                              ${parseFloat(product.price).toFixed(0)}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Arrow */}
-                        <div className="absolute bottom-8 right-5 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-xl text-brand-orange transition-all duration-500 hover:bg-brand-orange hover:text-white group-hover:-translate-x-2">
-                          <ArrowRight className="w-4 h-4" />
-                        </div>
-
-                      </Link>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              )}
-            </div>
-
-            {/* Bottom Offer Card */}
-            <div className=" h-[200px] bg-brand-orange rounded-4xl p-6 flex flex-col justify-between relative overflow-hidden group shadow-md">
-
-              <div className="absolute top-0 right-0 w-28 h-28 bg-white/5 rounded-bl-[80px] transition-all duration-700 group-hover:w-36 group-hover:h-36 group-hover:bg-white/10"></div>
-
-              <div>
-                <div className="inline-block px-4 py-1 bg-white/10 text-white text-[10px] font-black tracking-widest rounded-full mb-3 uppercase">
-                  Seasonal Deal
-                </div>
-                <h3 className="text-2xl font-black text-white mb-1 italic">
-                  25% OFF
-                </h3>
-                <p className="text-teal-100 text-xs max-w-[200px]">
-                  Upgrade your lifestyle with our most popular picks.
-                </p>
-              </div>
-
-              <Link
-                to="/shop"
-                className="flex items-center gap-3 text-white font-black text-sm uppercase tracking-wider group-hover:gap-5 transition-all duration-500"
-              >
-                Explore Now <ArrowRight className="w-5 h-5" />
-              </Link>
-
-            </div>
-          </div>
-
-
-        </div>
+      <div className="container mx-auto px-4 mb-8 text-center relative z-10">
+        <h1 className="text-3xl md:text-7xl font-bold  !leading-[85px] text-gray-900 mb-4">
+          Everything You Need <br className="hidden sm:block" />
+          for a <span className="text-gray-400">Modern Workspace</span>
+        </h1>
+        {/* <p className="text-base md:text-lg text-gray-500 max-w-xl mx-auto font-medium leading-relaxed">
+          Upgrade your office with our premium selection of high-performance printing solutions.
+        </p> */}
       </div>
 
+      <div className="relative w-full max-w-[1800] mx-auto h-[500px] flex items-center justify-center">
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <Loader2 className="w-10 h-10 text-gray-900 animate-spin" />
+          </div>
+        ) : (
+          <div className="relative w-full h-full flex items-center justify-center">
+
+            {/* DYNAMIC PRODUCTS CONTAINER */}
+            <div className="relative w-[400px] h-full flex flex-col items-center justify-center perspective-1000 z-20">
+              {/* Image Slider Area */}
+              <div className="relative w-full h-[350px] flex items-center justify-center">
+                {products.map((product, index) => {
+                  const { zIndex, opacity, transform, pointerEvents, isCenter } = getSlideStyles(index);
+
+                  return (
+                    <div
+                      key={product.id}
+                      className="absolute top-0 left-0 w-full h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col items-center justify-center"
+                      style={{
+                        zIndex,
+                        opacity,
+                        transform,
+                        pointerEvents
+                      }}
+                    >
+                      <Link
+                        to={`/shop/${product.id}`}
+                        className="relative flex items-center justify-center w-full h-full"
+                        onClick={(e) => !isCenter && e.preventDefault()}
+                      >
+                        {/* Image Wrapper */}
+                        <div className={`
+                                                          relative flex items-center justify-center transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]
+                                                          ${isCenter
+                            ? 'w-[380px] h-[300px] bg-transparent' // Center: Reduced height, transparent, visible overflow
+                            : 'w-[280px] h-[280px] rounded-full bg-gray-100 overflow-hidden grayscale-[0.5] opacity-80' // Side: Circle, Gray BG, Clipped
+                          }
+                                                      `}>
+                          <img
+                            src={formatImageUrl(product.image_url)}
+                            alt={product.name}
+                            className={`
+                                                  object-contain transition-all duration-700
+                                                  ${isCenter
+                                ? 'w-full h-full mix-blend-multiply scale-100'
+                                : 'w-[80%] h-[80%] mix-blend-multiply hover:scale-110'
+                              }
+                                                `}
+                          />
+                        </div>
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* FIXED CONTENT AREA (Updates based on activeIndex) */}
+              <div className="mt-8 text-center w-full px-4 min-h-[160px]">
+                {products[activeIndex] && (
+                  <div className="animate-in fade-in duration-500">
+                    <h3 className="text-xl font-medium text-gray-900 mb-1">
+                      {products[activeIndex].name}
+                    </h3>
+                    <p className="text-lg font-medium text-gray-500 mb-4">
+                      ${parseFloat(products[activeIndex].price).toFixed(2)}
+                    </p>
+                    <Link 
+                      to={`/shop/${products[activeIndex].id}`}
+                      className="inline-block px-8 py-2.5 bg-gray-900 text-white rounded-full font-bold hover:bg-black transition-all hover:scale-105"
+                    >
+                      Shop Now
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation Buttons - Flanking the center 400px box */}
+              <button
+                onClick={() => { handlePrev(); stopAutoRotate(); }}
+                className="absolute -left-40 top-[35%] -translate-y-1/2 z-50 w-14 h-14 rounded-full bg-white/90 border border-gray-100 flex items-center justify-center text-gray-900"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+
+              <button
+                onClick={() => { handleNext(); stopAutoRotate(); }}
+                className="absolute -right-40 top-[35%] -translate-y-1/2 z-50 w-14 h-14 rounded-full bg-white/90 border border-gray-100 flex items-center justify-center text-gray-900"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </section>
   );
 };

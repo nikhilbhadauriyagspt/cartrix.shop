@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAdminAuth } from '../../contexts/AdminAuthContext'
-import { Lock, Mail, ShieldCheck, AlertCircle } from 'lucide-react'
+import { Lock, Mail, ShieldCheck, AlertCircle, Sparkles, ArrowRight } from 'lucide-react'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -12,6 +12,7 @@ export default function AdminLogin() {
   const { login, admin } = useAdminAuth()
 
   useEffect(() => {
+    document.title = 'Admin Access - Modern Workspace'
     if (admin) {
       navigate('/admin/dashboard')
     }
@@ -34,65 +35,63 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50 to-accent-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-600 to-primary-500 rounded-2xl mb-4">
-              <ShieldCheck className="w-8 h-8 text-white" />
+    <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB] p-6 relative overflow-hidden font-sans selection:bg-brand-orange selection:text-white">
+      
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-orange/[0.03] rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-orange/[0.03] rounded-full blur-[120px] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+
+      <div className="relative z-10 w-full max-w-[500px] animate-slide-up">
+        <div className="bg-white rounded-[3.5rem] p-10 md:p-14 shadow-2xl shadow-gray-200/50 border border-gray-100">
+          
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-8 shadow-sm">
+              <ShieldCheck className="w-3 h-3" />
+              Secure Hub Access
             </div>
-            <h2 className="text-3xl font-bold text-slate-900">Admin Portal</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Sign in to access the admin dashboard
-            </p>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight leading-tight">
+              Admin <br />
+              <span className="text-gray-400">Portal.</span>
+            </h2>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm font-bold text-red-800">{error}</p>
+            <div className="mb-8 p-5 bg-rose-50 border border-rose-100 rounded-[2rem] text-rose-600 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-4 animate-shake shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-rose-500 shadow-sm">
+                <AlertCircle className="w-4 h-4" />
               </div>
+              {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-bold text-slate-700 mb-2">
-                Admin Email
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
-                </div>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Administrator Email</label>
+              <div className="relative group">
+                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-brand-orange transition-colors" />
                 <input
-                  id="email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-2-primary-500 text-slate-900 placeholder-slate-400"
-                  placeholder="admin@printerpro.com"
+                  className="w-full pl-16 pr-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
+                  placeholder="admin@company.com"
                 />
               </div>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-bold text-slate-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
-                </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Security Password</label>
+              <div className="relative group">
+                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-brand-orange transition-colors" />
                 <input
-                  id="password"
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-2-primary-500 text-slate-900 placeholder-slate-400"
-                  placeholder="Enter your password"
+                  className="w-full pl-16 pr-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/5 outline-none transition-all font-bold text-sm"
+                  placeholder="••••••••"
                 />
               </div>
             </div>
@@ -100,35 +99,44 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-2xl shadow-sm text-sm font-bold text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-sky-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-full py-6 bg-black text-white font-black rounded-2xl hover:bg-brand-orange transition-all duration-500 shadow-2xl shadow-gray-200 uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 transform hover:-translate-y-1 disabled:opacity-50 mt-10"
             >
               {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Signing in...</span>
-                </div>
+                <>
+                  <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  <span>Authenticating...</span>
+                </>
               ) : (
-                'Sign in to Admin Panel'
+                <>
+                  <span>Sign In to Hub</span>
+                  <ArrowRight className="w-5 h-5" />
+                </>
               )}
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-200">
-            <p className="text-xs text-center text-slate-500">
-              Authorized personnel only. All activities are logged and monitored.
+          <div className="mt-12 pt-10 border-t border-gray-50 text-center">
+            <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.3em] leading-relaxed">
+              Proprietary System Access <br />
+              Authorized Personnel Only
             </p>
           </div>
         </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-slate-600">
-            Default credentials for testing:
-          </p>
-          <p className="text-xs text-slate-500 mt-1 font-mono">
-            admin@printerpro.com / Admin@12345
-          </p>
-        </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes slide-up {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
+      `}</style>
     </div>
   )
 }
