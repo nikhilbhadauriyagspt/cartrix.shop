@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import {
-  Mail, Phone, MapPin, Facebook, Instagram, Twitter,
-  Linkedin, ArrowUpRight, Youtube, ShieldCheck
+  Mail, Phone, MapPin, ArrowUpRight, ShieldCheck, CreditCard
 } from 'lucide-react'
 import { useSiteSettings } from '../contexts/SiteSettingsContext'
 
@@ -25,9 +24,17 @@ export default function Footer() {
       links: [
         { to: '/faq', label: 'Help Center' },
         { to: '/contact', label: 'Contact Us' },
-        { to: '/policy/shipping-cancellation', label: 'Shipping Info' },
-        { to: '/policy/refund-policy', label: 'Returns' },
-        { to: '/about', label: 'Warranty' },
+        { to: '/about', label: 'Warranty Info' },
+        { to: '/shop', label: 'Order Status' },
+      ]
+    },
+    {
+      title: "Policies",
+      links: [
+        { to: '/policy/privacy-policy', label: 'Privacy Policy' },
+        { to: '/policy/terms-conditions', label: 'Terms & Conditions' },
+        { to: '/policy/shipping-cancellation', label: 'Shipping & Cancellation' },
+        { to: '/policy/refund-policy', label: 'Returns & Refunds' },
       ]
     },
     {
@@ -36,8 +43,6 @@ export default function Footer() {
         { to: '/about', label: 'Our Story' },
         { to: '/categories', label: 'Categories' },
         { to: '/contact', label: 'Store Locator' },
-        { to: '/policy/privacy-policy', label: 'Privacy Policy' },
-        { to: '/policy/terms-conditions', label: 'Terms of Service' },
       ]
     }
   ]
@@ -66,25 +71,11 @@ export default function Footer() {
             <p className="text-gray-500 text-lg leading-relaxed max-w-sm font-medium">
               Revolutionizing the way you print. We provide high-performance solutions for modern creators and enterprises.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-brand-orange hover:border-brand-orange transition-all duration-300">
-                <Facebook className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-brand-orange hover:border-brand-orange transition-all duration-300">
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-brand-orange hover:border-brand-orange transition-all duration-300">
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-brand-orange hover:border-brand-orange transition-all duration-300">
-                <Linkedin className="w-4 h-4" />
-              </a>
-            </div>
           </div>
 
           {/* Nav Links */}
           <div className="lg:col-span-8">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
               {sections.map((section) => (
                 <div key={section.title} className="space-y-6">
                   <h4 className="text-sm font-black uppercase tracking-widest text-gray-900">
@@ -141,14 +132,20 @@ export default function Footer() {
 
         {/* Bottom Section */}
         <div className="py-12 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-3 text-gray-400 font-medium text-xs uppercase tracking-widest">
-            <ShieldCheck className="w-4 h-4 text-green-500" />
-            <span>Secure & encrypted transactions</span>
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="flex items-center gap-3 text-gray-400 font-medium text-xs uppercase tracking-widest">
+              <ShieldCheck className="w-4 h-4 text-green-500" />
+              <span>Secure & encrypted transactions</span>
+            </div>
+            <div className="flex items-center gap-3 text-gray-400 font-medium text-xs uppercase tracking-widest border-l border-gray-200 pl-0 md:pl-6">
+              <CreditCard className="w-4 h-4 text-blue-500" />
+              <span>We accept <span className="text-blue-600 font-bold italic">PayPal</span></span>
+            </div>
           </div>
 
           <div className="flex items-center gap-8">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              &copy; {currentYear} {settings.brand_name || 'Printer Pro'}. Built for Performance.
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest text-center md:text-right">
+              &copy; {currentYear} {settings.brand_name || 'Printer Pro'}. subsidiary of PrimeFix Solutions LLC. Built for Performance.
             </p>
           </div>
         </div>

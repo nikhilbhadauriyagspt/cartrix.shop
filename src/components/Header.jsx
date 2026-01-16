@@ -1,8 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import {
   ShoppingCart, User, Menu, X, Heart, Phone, Mail,
-  ChevronDown, LogOut, LayoutDashboard,
-  Facebook, Instagram, Linkedin, Twitter, MapPin
+  ChevronDown, LogOut, LayoutDashboard, MapPin
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useCart } from '../contexts/CartContext'
@@ -124,13 +123,7 @@ export default function Header() {
             </div>
             
             <div className="flex items-center gap-4">
-               <span className="hidden md:inline opacity-80">Follow Us:</span>
-               <div className="flex gap-3">
-                 <a href="#" className="hover:text-black transition-colors"><Facebook className="w-3.5 h-3.5" /></a>
-                 <a href="#" className="hover:text-black transition-colors"><Twitter className="w-3.5 h-3.5" /></a>
-                 <a href="#" className="hover:text-black transition-colors"><Instagram className="w-3.5 h-3.5" /></a>
-                 <a href="#" className="hover:text-black transition-colors"><Linkedin className="w-3.5 h-3.5" /></a>
-               </div>
+               {/* Social links removed */}
             </div>
           </div>
         </div>
