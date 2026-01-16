@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useWebsite } from '../contexts/WebsiteContext'
 import { Lock, Mail, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react'
 
 export default function Login() {
